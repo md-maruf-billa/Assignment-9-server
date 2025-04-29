@@ -218,8 +218,54 @@ const forgetPassword = async (email: string) => {
   };
 };
 
+const resetPassword = async (
+  token: string,
+  email: string,
+  newPassword: string,
+) => {
+  let decodedData: JwtPayload;
+  try {
+    decodedData = jwtHelpers.verifyToken(
+      token,
+      configs.jwt.reset_secret as Secret,
+    );
+  } catch (err) {
+    throw new AppError('Invalid or expired token', httpStatus.UNAUTHORIZED);
+  }
+
+  const userData = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: decodedData.email,
+      isDeleted: false,
+    },
+  });
+
+  if (userData.email !== email) {
+    throw new AppError('Invalid email', httpStatus.UNAUTHORIZED);
+  }
+
+  const hashedPassword: string = await bcrypt.hash(newPassword, 12);
+
+  await prisma.user.update({
+    where: {
+      email: userData.email,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  return {
+    message: 'Password reset successfully!',
+  };
+};
+
 export const AuthService = {
   registerUser,
   loginUser,
   getMyProfile,
+  refreshToken,
+  changePassword,
+  forgetPassword,
+  resetPassword,
 };
