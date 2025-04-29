@@ -22,13 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', appRouter);
 
 // stating point
-
-app.get('/', (res: Response) => {
-  console.log();
-  manageResponse(res, {
-    success: true,
-    message: 'Server is running successfully',
-    statusCode: 200,
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Welcome to the API!',
+    data: null,
   });
 });
 
