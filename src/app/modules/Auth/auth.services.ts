@@ -3,6 +3,9 @@ import { prisma } from '../../utils/Prisma';
 import { User } from '@prisma/client';
 import { AppError } from '../../utils/AppError';
 import httpStatus from 'http-status';
+import { jwtHelpers } from '../../utils/JWT';
+import configs from '../../configs';
+import { Secret } from 'jsonwebtoken';
 
 const registerUser = async (payload: Partial<User>) => {
   if (!payload.email || !payload.password) {
@@ -46,7 +49,57 @@ const registerUser = async (payload: Partial<User>) => {
 };
 
 const loginUser = async (payload: { email: string; password: string }) => {
-  console.log('Login payload:', payload);
+  const isUserExists = await prisma.user.findUniqueOrThrow({
+    where: { email: payload.email, isDeleted: false },
+  });
+  if (!isUserExists) {
+    throw new AppError('User not found', httpStatus.NOT_FOUND);
+  }
+  const isPasswordMatch = await bcrypt.compare(
+    payload.password,
+    isUserExists.password,
+  );
+
+  if (!isPasswordMatch) {
+    throw new AppError('Invalid password', httpStatus.UNAUTHORIZED);
+  }
+
+  const { password, ...userData } = isUserExists;
+
+  const accessToken = jwtHelpers.generateToken(
+    {
+      email: userData.email,
+      role: userData.role,
+    },
+    configs.jwt.access_secret as Secret,
+    configs.jwt.access_expires as string,
+  );
+
+  const refreshToken = jwtHelpers.generateToken(
+    {
+      email: userData.email,
+      role: userData.role,
+    },
+    configs.jwt.refresh_secret as Secret,
+    configs.jwt.refresh_expires as string,
+  );
+
+  const result = {
+    user: userData,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  };
+
+  await prisma.user.update({
+    where: { email: payload.email },
+    data: { refreshToken: refreshToken },
+  });
+
+  return {
+    user: userData,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  };
 };
 
 const getMyProfile = async (email: string) => {

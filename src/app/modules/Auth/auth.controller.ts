@@ -38,11 +38,32 @@ const loginUser = catchAsyncResponse(async (req, res) => {
     password,
   });
 
+  if (!result) {
+    manageResponse(res, {
+      statusCode: httpStatus.UNAUTHORIZED,
+      success: false,
+      message: 'Invalid email or password!',
+      data: null,
+    });
+    return;
+  }
+  const { accessToken, ...userData } = result;
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: configs.env === 'production',
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
+
   manageResponse(res, {
     statusCode: 200,
     success: true,
     message: 'User login successfully!',
-    data: result,
+    data: {
+      user: userData,
+      accessToken: accessToken,
+    },
   });
 });
 
