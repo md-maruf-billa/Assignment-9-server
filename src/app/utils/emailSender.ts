@@ -3,9 +3,10 @@ import configs from '../configs';
 
 const emailSender = async (
   receiverMail: string,
+  from: string,
   subject: string,
   htmlBody: string,
-  text?: string
+  text?: string,
 ) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',

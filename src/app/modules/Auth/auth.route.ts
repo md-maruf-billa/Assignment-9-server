@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import requestValidator from '../../middlewares/requestValidator';
 import { AuthController } from './auth.controller';
 
 const router = Router();
