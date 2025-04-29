@@ -1,12 +1,10 @@
 import nodemailer from 'nodemailer';
 import configs from '../configs';
 
-const emailSender = async (
-  receiverMail: string,
-  from: string,
+export const EmailSender = async (
+  email: string,
   subject: string,
-  htmlBody: string,
-  text?: string,
+  text: string,
 ) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -16,16 +14,17 @@ const emailSender = async (
       user: configs.email_sender.email,
       pass: configs.email_sender.password,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 
-  // send mail with defined transport object
   const info = await transporter.sendMail({
-    from: `MA Health Care 🩺🩺 <${configs.email_sender.email}>`,
-    to: receiverMail,
-    subject,
-    text,
-    html: htmlBody,
+    from: configs.email_sender.email,
+    to: email,
+    subject: subject,
+    html: text,
   });
-};
 
-export default emailSender;
+  console.log('Message sent: %s', info.messageId);
+};
