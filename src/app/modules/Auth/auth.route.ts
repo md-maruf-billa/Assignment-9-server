@@ -21,4 +21,16 @@ router.get(
   AuthController.getMyProfile,
 );
 
+router.post('/refresh-token', AuthController.RefreshToken);
+router.post(
+  '/change-password',
+  RequestValidator(AuthValidation.changePassword),
+  AuthController.changePassword,
+);
+router.post(
+  '/forgot-password',
+  RequestValidator(AuthValidation.forgotPassword),
+  AuthController.forgotPassword,
+);
+
 export const authRouter = router;
