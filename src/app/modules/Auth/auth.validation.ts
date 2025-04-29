@@ -22,8 +22,23 @@ const getMyProfile = z.object({
   }),
 });
 
+const changePassword = z.object({
+  body: z.object({
+    oldPassword: z.string().min(6),
+    newPassword: z.string().min(6),
+  }),
+});
+
+const forgotPassword = z.object({
+  body: z.object({
+    email: z.string().email(),
+  }),
+});
+
 export const AuthValidation = {
   registerUser,
   loginUser,
   getMyProfile,
+  forgotPassword,
+  changePassword,
 };
