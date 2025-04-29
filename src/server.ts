@@ -1,12 +1,11 @@
-import app from "./app"
-import configs from "./configs"
+import app from "./app";
+import configs from "./configs";
 
 const main = async () => {
-    app.listen(configs.port, () => {
-        console.log(`Product Review server is running on: ${configs.port}`)
-    })
+  app.listen(configs.port, () => {
+    console.log(`Example app listening on port ${configs.port}`);
+  });
+};
+// check comments
 
-}
-
-
-main()
+main();
