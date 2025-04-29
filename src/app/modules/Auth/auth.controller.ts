@@ -89,8 +89,88 @@ const getMyProfile = catchAsyncResponse(async (req, res) => {
   });
 });
 
+const RefreshToken = catchAsyncResponse(async (req, res) => {
+  const { refreshToken } = req.cookies;
+  const result = await AuthService.refreshToken(refreshToken);
+  if (!result) {
+    manageResponse(res, {
+      statusCode: httpStatus.UNAUTHORIZED,
+      success: false,
+      message: 'Invalid refresh token!',
+      data: null,
+    });
+    return;
+  }
+  manageResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Refresh token generated successfully!',
+    data: result,
+  });
+});
+
+const changePassword = catchAsyncResponse(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = req.user;
+  const result = await AuthService.changePassword(user, {
+    oldPassword,
+    newPassword,
+  });
+  if (!result) {
+    manageResponse(res, {
+      statusCode: httpStatus.UNAUTHORIZED,
+      success: false,
+      message: 'Invalid old password!',
+      data: null,
+    });
+    return;
+  }
+  manageResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password changed successfully!',
+    data: null,
+  });
+});
+
+const forgotPassword = catchAsyncResponse(async (req, res) => {
+  await AuthService.forgetPassword(req.body);
+
+  manageResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Check your email!',
+    data: null,
+  });
+});
+
+const resetPassword = catchAsyncResponse(async (req, res) => {
+  const { token, newPassword, email } = req.body;
+  const result = await AuthService.resetPassword(token, email, newPassword);
+
+  if (!result) {
+    manageResponse(res, {
+      statusCode: httpStatus.UNAUTHORIZED,
+      success: false,
+      message: 'Invalid or expired token!',
+      data: null,
+    });
+    return;
+  }
+
+  manageResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password reset successfully!',
+    data: result,
+  });
+});
 export const AuthController = {
   resiterUser,
   getMyProfile,
   loginUser,
+  RefreshToken,
+  changePassword,
+  forgotPassword,
+  resetPassword,
 };
