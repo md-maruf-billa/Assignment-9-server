@@ -6,6 +6,12 @@ import httpStatus from 'http-status';
 
 const resiterUser = catchAsyncResponse(async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
+  console.log({
+    email,
+    password,
+    firstName,
+    lastName,
+  });
   const result = await AuthService.registerUser({
     email,
     password,
