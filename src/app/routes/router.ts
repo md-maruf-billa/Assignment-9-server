@@ -9,7 +9,6 @@ const moduleRoutes = [
   { path: '/review', route: reviewRouter },
 ];
 
-const appRouter = Router();
 
 moduleRoutes.forEach(route => appRouter.use(route.path, route.route));
 export default appRouter;
