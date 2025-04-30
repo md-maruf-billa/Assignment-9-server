@@ -2,13 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 import { verifyToken } from '../utils/generateToken';
 import configs from '../configs';
 import { AppError } from '../utils/AppError';
+import { Role } from '@prisma/client';
 
-const UserRole = {
-  superAdmin: 'superAdmin',
-  admin: 'admin',
-} as const;
 
-const auth = (...roles: (keyof typeof UserRole)[]) => {
+const auth = (...roles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
