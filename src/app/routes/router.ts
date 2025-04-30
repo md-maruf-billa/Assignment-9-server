@@ -5,8 +5,8 @@ import companyRoute from '../modules/Company/company.route';
 const appRouter = Router();
 
 const moduleRoutes = [
-    { path: '/auth', route: authRouter },
-    { path: "/company", route: companyRoute }
+  { path: '/auth', route: authRouter },
+  { path: "/company", route: companyRoute }
 ];
 
 moduleRoutes.forEach(route => appRouter.use(route.path, route.route));
