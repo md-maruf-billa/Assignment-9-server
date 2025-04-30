@@ -24,11 +24,14 @@ const changePassword = z.object({
 const forgotPassword = z.object({
   email: z.string().email(),
 });
-
+const resetPassword = z.object({
+  token: z.string(), newPassword: z.string(), email: z.string()
+})
 export const AuthValidation = {
   registerUser,
   loginUser,
   getMyProfile,
   forgotPassword,
   changePassword,
+  resetPassword
 };
