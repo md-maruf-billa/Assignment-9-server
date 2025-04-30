@@ -22,11 +22,10 @@ const globalErrorHandler = (
       message = 'Duplicate Key error';
       error = err.meta;
     }
-  }
-  else if (err instanceof AppError) {
+  } else if (err instanceof AppError) {
     message = err?.message;
     statusCode = err?.statusCode;
-    error = err?.stack
+    error = err?.stack;
   }
 
   res.status(statusCode).json({
