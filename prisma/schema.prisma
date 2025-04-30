@@ -8,38 +8,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-model User {
-  id             String   @id @default(uuid())
-  firstName      String?   @default("")
-  lastName       String?   @default("")
-  email          String   @unique
-  password       String
-  role           Role     @default(USER)
-  status         Status   @default(ACTIVE)
-  isActive       ActiveStatus  @default(ACTIVE)       
-  isDeleted      Boolean  @default(false)     
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
- 
-  resetToken     String?   
-  resetTokenExpiry DateTime?
- 
-  refreshToken   String?
-
-
-  @@map("users")
-  @@index([email], name: "idx_users_email")
- 
-}
-
-
-
 enum Role {
   USER
+  COMPANY
   ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
 enum ActiveStatus {
@@ -48,10 +26,130 @@ enum ActiveStatus {
 }
 
 
-enum Status {
-  ACTIVE
-  BLOCKED
-  DELETED
+model Category {
+  id     String   @id @default(uuid())
+  name   String   @unique
+  reviews Review[]
 }
 
 
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  UNPUBLISHED
+}
+model Account {
+  id               String        @id @default(uuid())
+  email            String        @unique
+  password         String
+  role             Role
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  status           Status        @default(ACTIVE)
+  isActive         ActiveStatus  @default(ACTIVE)
+  isDeleted        Boolean       @default(false)
+
+  user             User?         @relation("AccountUser")
+  company          Company?      @relation("AccountCompany")
+  admin            Admin?        @relation("AccountAdmin")
+
+  reviews          Review[]
+  votes            Vote[]
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  accountId     String   @unique
+  account       Account  @relation("AccountUser", fields: [accountId], references: [id])
+
+  profileImage  String?
+  bio           String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Company {
+  id            String   @id @default(uuid())
+  name          String
+  accountId     String   @unique
+  account       Account  @relation("AccountCompany", fields: [accountId], references: [id])
+
+  products      Product[] @relation(name: "CompanyProducts")
+
+  website       String?
+  companyImage  String?
+  description   String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Admin {
+  id            String   @id @default(uuid())
+  name          String
+  accountId     String   @unique
+  account       Account  @relation("AccountAdmin", fields: [accountId], references: [id])
+
+  profileImage  String?
+  bio           String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  price       Float
+  description String?
+  imageUrl    String?
+  isDeleted   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  reviews     Review[]
+
+  companyId   String?
+  company     Company?  @relation(name: "CompanyProducts", fields: [companyId], references: [id])
+}
+
+model Review {
+  id             String        @id @default(uuid())
+  title          String
+  description    String
+  rating         Int
+  categoryId     String
+  category       Category      @relation(fields: [categoryId], references: [id])
+  productId      String?
+  product        Product?      @relation(fields: [productId], references: [id])
+
+  purchaseSource String?
+  images         String[]
+  isPremium      Boolean       @default(false)
+
+  userId         String
+  user           Account       @relation(fields: [userId], references: [id])
+  status         ReviewStatus  @default(PENDING)
+  moderationNote String?
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  isDeleted      Boolean       @default(false)
+
+  votes          Vote[]        @relation(name: "ReviewVotes")
+}
+
+model Vote {
+  id        String   @id @default(uuid())
+  reviewId  String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  review    Review   @relation(name: "ReviewVotes", fields: [reviewId], references: [id])
+  user      Account  @relation(fields: [userId], references: [id])
+}
