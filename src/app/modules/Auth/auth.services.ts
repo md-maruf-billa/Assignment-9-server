@@ -1,61 +1,58 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../../utils/Prisma';
-import { User } from '@prisma/client';
-import { AppError } from '../../utils/AppError';
 import httpStatus from 'http-status';
 import { jwtHelpers } from '../../utils/JWT';
 import configs from '../../configs';
 import { JwtPayload, Secret } from 'jsonwebtoken';
 import { EmailSender } from '../../utils/emailSender';
+import { AppError } from './../../utils/AppError';
+import { Role } from '@prisma/client';
 
-const registerUser = async (payload: Partial<User>) => {
+const register_user_into_db = async (payload: any) => {
+
   if (!payload.email || !payload.password) {
-    throw new Error('Email and password are required');
+    throw new AppError('Email and password are required', httpStatus.BAD_REQUEST);
   }
+  const isAccountExists = await prisma.account.findUnique({ where: { email: payload.email } });
 
-  const isEmailExists = await prisma.user.findUnique({
-    where: { email: payload.email, isDeleted: false },
-  });
-
-  if (isEmailExists) {
-    throw new AppError('Email already exists', httpStatus.BAD_REQUEST);
+  if (isAccountExists) {
+    throw new AppError('Account already exists', httpStatus.BAD_REQUEST);
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   if (!emailRegex.test(payload.email)) {
     throw new AppError('Invalid email format', httpStatus.BAD_REQUEST);
   }
-  if (payload.password.length < 6) {
-    throw new AppError(
-      'Password must be at least 6 characters long',
-      httpStatus.BAD_REQUEST,
-    );
-  }
+
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
-  const UserData = {
+  const accountData = {
     email: payload.email,
     password: hashedPassword,
-    firstName: payload.firstName,
-    lastName: payload.lastName,
-  };
-
+    role: Role.USER
+  }
   const result = await prisma.$transaction(async tx => {
-    const user = await tx.user.create({
-      data: UserData,
-    });
-    return user;
-  });
-
+    const createdAccount = await tx.account.create({ data: accountData })
+    const userData = {
+      name: payload.name,
+      accountId: createdAccount.id,
+    }
+    await tx.user.create({ data: userData })
+    return createdAccount
+  })
   return result;
 };
 
-const loginUser = async (payload: { email: string; password: string }) => {
-  const isUserExists = await prisma.user.findUniqueOrThrow({
-    where: { email: payload.email, isDeleted: false },
-  });
+const login_user_from_db = async (payload: { email: string; password: string }) => {
+  const isUserExists = await prisma.account.findUnique(
+    {
+      where: { email: payload.email, isActive: "ACTIVE", isDeleted: false }
+    }
+  )
   if (!isUserExists) {
-    throw new AppError('User not found', httpStatus.NOT_FOUND);
+    throw new AppError('Account not found', httpStatus.NOT_FOUND);
   }
+
   const isPasswordMatch = await bcrypt.compare(
     payload.password,
     isUserExists.password,
@@ -84,38 +81,33 @@ const loginUser = async (payload: { email: string; password: string }) => {
     configs.jwt.refresh_secret as Secret,
     configs.jwt.refresh_expires as string,
   );
-
-  const result = {
-    user: userData,
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-  };
-
-  await prisma.user.update({
-    where: { email: payload.email },
-    data: { refreshToken: refreshToken },
-  });
-
   return {
-    user: userData,
     accessToken: accessToken,
     refreshToken: refreshToken,
   };
 };
 
-const getMyProfile = async (email: string) => {
-  const user = await prisma.user.findUnique({
+
+
+
+const get_my_profile_from_db = async (email: string) => {
+  const user = await prisma.account.findUnique({
     where: { email: email, isDeleted: false },
+    include: {
+      company: true,
+      user: true,
+      admin: true
+    }
   });
 
   if (!user) {
     throw new AppError('User not found', httpStatus.NOT_FOUND);
   }
-
   return user;
 };
 
-const refreshToken = async (token: string) => {
+
+const refresh_token_from_db = async (token: string) => {
   let decodedData;
   try {
     decodedData = jwtHelpers.verifyToken(
@@ -126,7 +118,7 @@ const refreshToken = async (token: string) => {
     throw new Error('You are not authorized!');
   }
 
-  const userData = await prisma.user.findUniqueOrThrow({
+  const userData = await prisma.account.findUniqueOrThrow({
     where: {
       email: decodedData.email,
       isDeleted: false,
@@ -142,83 +134,82 @@ const refreshToken = async (token: string) => {
     configs.jwt.access_expires as string,
   );
 
-  return {
-    accessToken,
-    refreshToken: userData.refreshToken,
-  };
+  return accessToken;
 };
 
-const changePassword = async (
+const change_password_from_db = async (
   user: JwtPayload,
   payload: {
     oldPassword: string;
     newPassword: string;
   },
 ) => {
-  const userData = await prisma.user.findUniqueOrThrow({
+  const isExistAccount = await prisma.account.findUnique({
     where: {
       email: user.email,
       isDeleted: false,
+      isActive: "ACTIVE"
     },
   });
+  if (!isExistAccount) {
+    throw new AppError("Account not found !", httpStatus.NOT_FOUND)
+  }
 
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.oldPassword,
-    userData.password,
+    isExistAccount.password
   );
 
   if (!isCorrectPassword) {
     throw new AppError('Old password is incorrect', httpStatus.UNAUTHORIZED);
   }
 
-  const hashedPassword: string = await bcrypt.hash(payload.newPassword, 12);
+  const hashedPassword: string = await bcrypt.hash(payload.newPassword, 10);
 
-  await prisma.user.update({
+  await prisma.account.update({
     where: {
-      email: userData.email,
+      email: isExistAccount.email,
     },
     data: {
       password: hashedPassword,
     },
   });
 
-  return {
-    message: 'Password changed successfully!',
-  };
+  return "Password update is successful."
 };
 
-const forgetPassword = async (email: string) => {
-  const userData = await prisma.user.findUniqueOrThrow({
+const forget_password_from_db = async (email: string) => {
+
+  const isAccountExists = await prisma.account.findUnique({
     where: {
       email: email,
       isDeleted: false,
+      isActive: "ACTIVE"
     },
   });
 
-  if (!userData) {
-    throw new AppError('User not found', 404);
+  if (!isAccountExists) {
+    throw new AppError('Account not found', 404);
   }
 
   const resetToken = jwtHelpers.generateToken(
     {
-      email: userData.email,
-      role: userData.role,
+      email: isAccountExists.email,
+      role: isAccountExists.role,
     },
     configs.jwt.reset_secret as Secret,
     configs.jwt.reset_expires as string,
   );
 
-  const resetPasswordLink = `${configs.jwt.reset_base_link}?token=${resetToken}&email=${userData.email}`;
+  const resetPasswordLink = `${configs.jwt.reset_base_link}?token=${resetToken}&email=${isAccountExists.email}`;
   const emailTemplate = `<p>Click the link below to reset your password:</p><a href="${resetPasswordLink}">Reset Password</a>`;
 
   await EmailSender(email, 'Reset Password Link', emailTemplate);
 
-  return {
-    message: 'Reset password link sent to your email!',
-  };
+  return 'Reset password link sent to your email!'
 };
 
-const resetPassword = async (
+const reset_password_into_db = async (
   token: string,
   email: string,
   newPassword: string,
@@ -233,39 +224,40 @@ const resetPassword = async (
     throw new AppError('Invalid or expired token', httpStatus.UNAUTHORIZED);
   }
 
-  const userData = await prisma.user.findUniqueOrThrow({
+  const isAccountExists = await prisma.account.findUnique({
     where: {
       email: decodedData.email,
       isDeleted: false,
+      isActive: "ACTIVE"
     },
   });
-
-  if (userData.email !== email) {
+  if (!isAccountExists) {
+    throw new AppError("Account not found!!", httpStatus.NOT_FOUND)
+  }
+  if (isAccountExists.email !== email) {
     throw new AppError('Invalid email', httpStatus.UNAUTHORIZED);
   }
 
-  const hashedPassword: string = await bcrypt.hash(newPassword, 12);
+  const hashedPassword: string = await bcrypt.hash(newPassword, 10);
 
-  await prisma.user.update({
+  await prisma.account.update({
     where: {
-      email: userData.email,
+      email: isAccountExists.email,
     },
     data: {
       password: hashedPassword,
     },
   });
 
-  return {
-    message: 'Password reset successfully!',
-  };
-};
+  return 'Password reset successfully!'
+}
 
 export const AuthService = {
-  registerUser,
-  loginUser,
-  getMyProfile,
-  refreshToken,
-  changePassword,
-  forgetPassword,
-  resetPassword,
+  register_user_into_db,
+  login_user_from_db,
+  get_my_profile_from_db,
+  refresh_token_from_db,
+  change_password_from_db,
+  forget_password_from_db,
+  reset_password_into_db,
 };
