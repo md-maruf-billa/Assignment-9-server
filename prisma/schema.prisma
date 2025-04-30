@@ -9,32 +9,56 @@ datasource db {
 }
 
 
-
 model User {
-  id             String   @id @default(uuid())
-  firstName      String?   @default("")
-  lastName       String?   @default("")
-  email          String   @unique
-  password       String
-  role           Role     @default(USER)
-  status         Status   @default(ACTIVE)
-  isActive       ActiveStatus  @default(ACTIVE)       
-  isDeleted      Boolean  @default(false)     
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id        String       @id @default(uuid())
+  firstName String?      @default("")
+  lastName  String?      @default("")
+  email     String       @unique
+  password  String
+  role      Role         @default(USER)
+  status    Status       @default(ACTIVE)
+  isActive  ActiveStatus @default(ACTIVE)
+  isDeleted Boolean      @default(false)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
- 
-  resetToken     String?   
+  resetToken       String?
   resetTokenExpiry DateTime?
- 
-  refreshToken   String?
 
+  refreshToken String?
+  Review       Review[]
 
-  @@map("users")
   @@index([email], name: "idx_users_email")
- 
+  @@map("users")
 }
 
+model Category {
+  id     String   @id @default(uuid())
+  name   String   @unique
+  Review Review[]
+}
+
+model Review {
+  id             String       @id @default(uuid())
+  title          String
+  description    String
+  rating         Int
+  categoryId     String
+  purchaseSource String?
+  images         String[]
+  isPremium      Boolean      @default(false) //  only use on admin
+  price          Float? // for premium reviews only use on admin
+  authorId       String
+  status         ReviewStatus @default(PENDING)
+  moderationNote String? //  only use on admin why review is not published
+  // votes          Vote[]    // updated when votes model created
+  // comments       Comment[] // updated when comments model created
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  author   User     @relation(fields: [authorId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
 
 
 enum Role {
@@ -46,12 +70,13 @@ enum ActiveStatus {
   ACTIVE
   INACTIVE
 }
-
-
 enum Status {
   ACTIVE
   BLOCKED
   DELETED
 }
-
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  UNPUBLISHED
 
