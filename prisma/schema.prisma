@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  
 }
 
 datasource db {
@@ -58,6 +59,7 @@ model Review {
   category Category @relation(fields: [categoryId], references: [id])
 }
 
+
 enum Role {
   USER
   ADMIN
@@ -74,8 +76,10 @@ enum Status {
   DELETED
 }
 
+
 enum ReviewStatus {
   PENDING
   APPROVED
   UNPUBLISHED
 }
+
