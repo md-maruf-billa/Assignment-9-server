@@ -1,38 +1,28 @@
 import { z } from 'zod';
 
 const registerUser = z.object({
-  body: z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
-    firstName: z.string().min(1),
-    lastName: z.string().min(1),
-  }),
+  email: z.string().email(),
+  password: z.string().min(6),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
 });
 
 const loginUser = z.object({
-  body: z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
-  }),
+  email: z.string().email(),
+  password: z.string().min(6),
 });
 
 const getMyProfile = z.object({
-  user: z.object({
-    email: z.string().email(),
-  }),
+  email: z.string().email(),
 });
 
 const changePassword = z.object({
-  body: z.object({
-    oldPassword: z.string().min(6),
-    newPassword: z.string().min(6),
-  }),
+  oldPassword: z.string().min(6),
+  newPassword: z.string().min(6),
 });
 
 const forgotPassword = z.object({
-  body: z.object({
-    email: z.string().email(),
-  }),
+  email: z.string().email(),
 });
 
 export const AuthValidation = {
