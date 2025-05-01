@@ -45,12 +45,14 @@ router.get(
 
 router.post(
     '/create-category',
+    auth(Role.ADMIN),
     RequestValidator(categoryValidation.createCategory),
     categoryController.createCategory,
 );
 
 router.patch(
-    '/:id',
+    '/update/:id',
+    auth(Role.ADMIN),
     RequestValidator(categoryValidation.updateCategory),
     categoryController.updateCategory
 );
@@ -58,6 +60,7 @@ router.patch(
 
 router.delete(
     '/delete/:id',
+    auth(Role.ADMIN),
     categoryController.deleteCategory
 );
 
