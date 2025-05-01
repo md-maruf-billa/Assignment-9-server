@@ -2,6 +2,8 @@ import { Router } from 'express';
 import RequestValidator from '../../middlewares/requestValidator';
 import { categoryValidation } from './category.validation';
 import { categoryController } from './category.controller';
+import auth from '../../middlewares/auth';
+import { Role } from '@prisma/client';
 
 const router = Router();
 
@@ -13,16 +15,18 @@ router.get(
 router.get(
     '/:id',
     categoryController.getCategoryById
-)
+);
 
 router.post(
     '/create-category',
+    auth(Role.ADMIN),
     RequestValidator(categoryValidation.createCategory),
     categoryController.createCategory,
 );
 
 router.patch(
-    '/:id',
+    '/update/:id',
+    auth(Role.ADMIN),
     RequestValidator(categoryValidation.updateCategory),
     categoryController.updateCategory
 );
@@ -30,6 +34,7 @@ router.patch(
 
 router.delete(
     '/delete/:id',
+    auth(Role.ADMIN),
     categoryController.deleteCategory
 );
 
