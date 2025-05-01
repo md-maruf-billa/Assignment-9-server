@@ -6,7 +6,17 @@ import auth from '../../middlewares/auth';
 import { Role } from '@prisma/client';
 
 const router = Router();
-
+router.get('/', auth(Role.ADMIN, Role.USER), reviewController.getReview);
+router.get(
+  '/:id',
+  auth(Role.ADMIN, Role.USER),
+  reviewController.getSingleReview,
+);
+router.get(
+  '/user/:userId',
+  auth(Role.ADMIN, Role.USER),
+  reviewController.getReviewByUserId,
+);
 router.post(
   '/create-review',
   RequestValidator(reviewValidation.createReview),

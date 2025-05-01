@@ -3,6 +3,22 @@ import { prisma } from '../../utils/Prisma';
 import { AppError } from '../../utils/AppError';
 import status from 'http-status';
 
+const getReview = async () => {
+  const result = await prisma.review.findMany();
+  return result;
+};
+const getSingleReview = async (id: string) => {
+  const result = await prisma.review.findUniqueOrThrow({
+    where: { id: id },
+  });
+  return result;
+};
+const getReviewByUserId = async (id: string) => {
+  const result = await prisma.review.findMany({
+    where: { userId: id },
+  });
+  return result;
+};
 const createReview = async (reviewData: Review) => {
   const result = await prisma.review.create({
     data: reviewData,
@@ -50,4 +66,7 @@ export const reviewService = {
   createReview,
   updateReview,
   deleteReview,
+  getReview,
+  getSingleReview,
+  getReviewByUserId,
 };
