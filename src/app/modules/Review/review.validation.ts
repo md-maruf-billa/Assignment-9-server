@@ -6,11 +6,13 @@ const createReview = z.object({
   rating: z.number().int().min(1).max(5),
   categoryId: z.string().uuid('Invalid category ID'),
   productId: z.string().uuid('Invalid product ID').optional(),
+
   purchaseSource: z.string().optional(),
   images: z
     .array(z.string().url(), { invalid_type_error: 'Must be an array of URLs' })
     .optional(),
   isPremium: z.boolean().optional(),
+  userId: z.string().uuid('Invalid user ID'),
   userId: z.string().uuid('Invalid user ID'),
   price: z.number().positive().optional(),
   authorId: z.string().uuid('Invalid author ID'),
@@ -27,6 +29,7 @@ const updateReview = z.object({
   purchaseSource: z.string().optional(),
   images: z.array(z.string().url()).optional(),
   isPremium: z.boolean().optional(),
+  userId: z.string().uuid('Invalid user ID').optional(),
   userId: z.string().uuid('Invalid user ID').optional(),
   price: z.number().positive().optional(),
   authorId: z.string().uuid('Invalid author ID').optional(),
