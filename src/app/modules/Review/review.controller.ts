@@ -3,6 +3,7 @@ import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { reviewService } from './review.service';
 
+
 const getReview = catchAsyncResponse(async (req, res) => {
   const result = await reviewService.getReview();
   manageResponse(res, {

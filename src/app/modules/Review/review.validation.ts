@@ -12,6 +12,11 @@ const createReview = z.object({
     .optional(),
   isPremium: z.boolean().optional(),
   userId: z.string().uuid('Invalid user ID'),
+  purchaseSource: z.string().optional(),
+  images: z.array(z.string().url()).optional(), // Optional array of image URLs
+  isPremium: z.boolean().optional(),
+  price: z.number().positive().optional(),
+  authorId: z.string().uuid('Invalid author ID'),
   status: z.enum(['PENDING', 'APPROVED', 'UNPUBLISHED']).optional(),
   moderationNote: z.string().optional(),
 });
@@ -26,6 +31,11 @@ const updateReview = z.object({
   images: z.array(z.string().url()).optional(),
   isPremium: z.boolean().optional(),
   userId: z.string().uuid('Invalid user ID').optional(),
+  purchaseSource: z.string().optional(),
+  images: z.array(z.string().url()).optional(),
+  isPremium: z.boolean().optional(),
+  price: z.number().positive().optional(),
+  authorId: z.string().uuid('Invalid author ID').optional(),
   status: z.enum(['PENDING', 'APPROVED', 'UNPUBLISHED']).optional(),
   moderationNote: z.string().optional(),
 });
