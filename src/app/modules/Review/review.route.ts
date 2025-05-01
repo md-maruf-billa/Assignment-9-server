@@ -13,5 +13,16 @@ router.post(
   auth(Role.ADMIN, Role.USER),
   reviewController.createReview,
 );
+router.patch(
+  '/update-review',
+  RequestValidator(reviewValidation.updateReview),
+  auth(Role.ADMIN, Role.USER),
+  reviewController.updateReview,
+);
+router.delete(
+  '/delete-review',
+  auth(Role.ADMIN, Role.USER),
+  reviewController.deleteReview,
+);
 
 export const reviewRouter = router;
