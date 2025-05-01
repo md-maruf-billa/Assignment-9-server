@@ -60,6 +60,7 @@ const deleteCategory = catchAsyncResponse(async (req, res) => {
     });
 });
 
+
 export const categoryController = {
     createCategory,
     getCategories,

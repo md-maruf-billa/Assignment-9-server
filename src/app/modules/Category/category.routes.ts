@@ -38,4 +38,17 @@ router.delete(
     categoryController.deleteCategory
 );
 
+router.get(
+    '/:id',
+    categoryController.getCategoryById
+)
+
+router.post(
+    '/create-category',
+    RequestValidator(categoryValidation.createCategory),
+    categoryController.createCategory,
+);
+
+
+
 export const categoryRouter = router;

@@ -1,2 +1,6 @@
 node_modules
+<<<<<<< HEAD
+=======
+.env
+>>>>>>> 344fa7c (category module: add getCategories and getCategoryById methods;)
 dist

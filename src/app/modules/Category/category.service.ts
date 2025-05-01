@@ -20,7 +20,10 @@ const getCategories = async () => {
     return result;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 344fa7c (category module: add getCategories and getCategoryById methods;)
 const getCategoryById = async (id: string) => {
     const result = await prisma.category.findUnique({
         where: {
