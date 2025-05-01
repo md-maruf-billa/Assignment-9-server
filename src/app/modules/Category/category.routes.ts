@@ -25,8 +25,7 @@ router.post(
 );
 
 router.patch(
-    '/update/:id',
-    auth(Role.ADMIN),
+    '/:id',
     RequestValidator(categoryValidation.updateCategory),
     categoryController.updateCategory
 );
@@ -34,7 +33,6 @@ router.patch(
 
 router.delete(
     '/delete/:id',
-    auth(Role.ADMIN),
     categoryController.deleteCategory
 );
 
