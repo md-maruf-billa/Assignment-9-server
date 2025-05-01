@@ -1,5 +1,6 @@
 import { Review } from '@prisma/client';
 import { prisma } from '../../utils/Prisma';
+
 import { AppError } from '../../utils/AppError';
 import status from 'http-status';
 
@@ -19,12 +20,14 @@ const getReviewByUserId = async (id: string) => {
   });
   return result;
 };
+
 const createReview = async (reviewData: Review) => {
   const result = await prisma.review.create({
     data: reviewData,
   });
   return result;
 };
+
 const updateReview = async (
   updatedData: Partial<Review>,
   reviewId: string,
