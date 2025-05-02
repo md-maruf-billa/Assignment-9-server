@@ -2,8 +2,8 @@ import { Router } from 'express';
 import { reviewController } from './review.controller';
 import RequestValidator from '../../middlewares/requestValidator';
 import { reviewValidation } from './review.validation';
-
 import auth from '../../middlewares/auth';
+
 import { Role } from '@prisma/client';
 
 const router = Router();
@@ -37,9 +37,9 @@ router.delete(
 );
 router.post(
   '/create-review',
+  auth('USER', 'ADMIN'),
   RequestValidator(reviewValidation.createReview),
   reviewController.createReview,
 );
 
-
-export const reviewRouter = router;
+export default router;
