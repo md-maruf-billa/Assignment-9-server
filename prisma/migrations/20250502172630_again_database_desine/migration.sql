@@ -14,6 +14,7 @@ CREATE TYPE "ReviewStatus" AS ENUM ('PENDING', 'APPROVED', 'UNPUBLISHED');
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "images" TEXT NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
@@ -38,7 +39,7 @@ CREATE TABLE "Account" (
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" TEXT,
     "accountId" TEXT NOT NULL,
     "profileImage" TEXT,
     "bio" TEXT,
@@ -51,7 +52,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Company" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" TEXT,
     "accountId" TEXT NOT NULL,
     "website" TEXT,
     "companyImage" TEXT,
@@ -65,7 +66,7 @@ CREATE TABLE "Company" (
 -- CreateTable
 CREATE TABLE "Admin" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" TEXT,
     "accountId" TEXT NOT NULL,
     "profileImage" TEXT,
     "bio" TEXT,
@@ -109,6 +110,19 @@ CREATE TABLE "Review" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ReviewComment" (
+    "id" TEXT NOT NULL,
+    "reviewId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "ReviewComment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -157,6 +171,12 @@ ALTER TABLE "Review" ADD CONSTRAINT "Review_productId_fkey" FOREIGN KEY ("produc
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ReviewComment" ADD CONSTRAINT "ReviewComment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ReviewComment" ADD CONSTRAINT "ReviewComment_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Vote" ADD CONSTRAINT "Vote_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

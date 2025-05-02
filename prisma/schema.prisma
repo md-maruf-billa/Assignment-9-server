@@ -33,6 +33,7 @@ enum ReviewStatus {
 model Category {
   id      String   @id @default(uuid())
   name    String   @unique
+  images  String
   reviews Review[]
 }
 
@@ -53,8 +54,9 @@ model Account {
   company Company? @relation("AccountCompany")
   admin   Admin?   @relation("AccountAdmin")
 
-  reviews Review[]
-  votes   Vote[]
+  reviews       Review[]
+  votes         Vote[]
+  ReviewComment ReviewComment[]
 }
 
 model User {
@@ -138,7 +140,21 @@ model Review {
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
 
-  votes Vote[] @relation(name: "ReviewVotes")
+  votes         Vote[]          @relation(name: "ReviewVotes")
+  ReviewComment ReviewComment[]
+}
+
+model ReviewComment {
+  id        String   @id @default(uuid())
+  reviewId  String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      Account @relation(fields: [userId], references: [id])
+  review    Review  @relation(fields: [reviewId], references: [id])
+  isDeleted Boolean @default(false)
 }
 
 model Vote {
