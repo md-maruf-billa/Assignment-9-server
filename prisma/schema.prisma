@@ -24,16 +24,16 @@ enum ActiveStatus {
   INACTIVE
 }
 
-model Category {
-  id      String   @id @default(uuid())
-  name    String   @unique
-  reviews Review[]
-}
-
 enum ReviewStatus {
   PENDING
   APPROVED
   UNPUBLISHED
+}
+
+model Category {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  reviews Review[]
 }
 
 model Account {
