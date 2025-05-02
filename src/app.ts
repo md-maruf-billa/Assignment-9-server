@@ -10,7 +10,7 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: ['*'],
+    origin: ['*', 'http://localhost:3001'],
   }),
 );
 app.use(express.json({ limit: '50mb' }));

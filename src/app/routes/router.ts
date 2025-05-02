@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authRouter } from '../modules/Auth/auth.route';
 import companyRoute from '../modules/Company/company.route';
-import { reviewRouter } from '../modules/Review/review.route';
+import reviewRouter from '../modules/Review/review.route';
 import { categoryRouter } from '../modules/Category/category.routes';
 
 const appRouter = Router();
