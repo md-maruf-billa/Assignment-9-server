@@ -46,9 +46,9 @@ const delete_account_into_db = async (email: string) => {
     if (!isExistAccount) {
         throw new AppError("Account not found !!", httpStatus.NOT_FOUND)
     }
-    await prisma.$transaction(async (td) => {
-        await td.account.update({ where: { email }, data: { isDeleted: true } })
-        await td.company.update({ where: { id: isExistAccount.company?.id }, data: { isDeleted: true } })
+    await prisma.$transaction(async (tranClient) => {
+        await tranClient.account.update({ where: { email }, data: { isDeleted: true } })
+        await tranClient.company.update({ where: { id: isExistAccount.company?.id }, data: { isDeleted: true } })
     })
     return;
 }
