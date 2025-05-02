@@ -33,17 +33,10 @@ const createProduct = catchAsyncResponse(async (req, res) => {
   });
 });
 const updateProduct = catchAsyncResponse(async (req, res) => {
-  const productId = req.query.productId;
-  if (!productId) {
-    return manageResponse(res, {
-      statusCode: status.BAD_REQUEST,
-      success: false,
-      message: 'Product ID is required',
-    });
-  }
+  const { productId } = req?.query;
   const result = await productService.updateProduct(
     productId as string,
-    req.body,
+    req.body
   );
   manageResponse(res, {
     statusCode: status.OK,
@@ -53,14 +46,7 @@ const updateProduct = catchAsyncResponse(async (req, res) => {
   });
 });
 const softDeleteProduct = catchAsyncResponse(async (req, res) => {
-  const productId = req.query.productId;
-  if (!productId) {
-    return manageResponse(res, {
-      statusCode: status.BAD_REQUEST,
-      success: false,
-      message: 'Product ID is required',
-    });
-  }
+  const { productId } = req?.query;
   const result = await productService.softDeleteProduct(productId as string);
   manageResponse(res, {
     statusCode: status.OK,

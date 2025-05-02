@@ -43,15 +43,7 @@ const createReview = catchAsyncResponse(async (req, res) => {
 });
 
 const updateReview = catchAsyncResponse(async (req, res) => {
-  const userId = req.query.userId;
-  const reviewId = req.query.reviewId;
-  if (!userId || !reviewId) {
-    return manageResponse(res, {
-      statusCode: status.BAD_REQUEST,
-      success: false,
-      message: 'User ID and Review ID are required',
-    });
-  }
+  const { userId, reviewId } = req?.query
   const result = await reviewService.updateReview(
     req.body,
     reviewId as string,
@@ -64,23 +56,13 @@ const updateReview = catchAsyncResponse(async (req, res) => {
     data: result,
   });
 });
+
 const deleteReview = catchAsyncResponse(async (req, res) => {
-  const userId = req.query.userId;
-  const reviewId = req.query.reviewId;
-
-  if (!userId || !reviewId) {
-    return manageResponse(res, {
-      statusCode: status.BAD_REQUEST,
-      success: false,
-      message: 'User ID and Review ID are required',
-    });
-  }
-
-  const result = await reviewService.deleteReview(
+  const { userId, reviewId } = req?.query;
+  await reviewService.deleteReview(
     reviewId as string,
     userId as string,
   );
-
   manageResponse(res, {
     statusCode: status.OK,
     success: true,
