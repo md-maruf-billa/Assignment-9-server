@@ -14,9 +14,18 @@ const register_user = catchAsyncResponse(async (req, res) => {
   });
 });
 
-
 const login_user = catchAsyncResponse(async (req, res) => {
   const result = await AuthService.login_user_from_db(req.body);
+
+  if (!result) {
+    manageResponse(res, {
+      statusCode: httpStatus.UNAUTHORIZED,
+      success: false,
+      message: 'Invalid email or password',
+      data: null,
+    });
+    return;
+  }
   res.cookie('refreshToken', result.refreshToken, {
     secure: configs.env == 'production',
     httpOnly: true,
@@ -26,12 +35,11 @@ const login_user = catchAsyncResponse(async (req, res) => {
     success: true,
     message: 'User is logged in successful !',
     data: {
-      accessToken: result.accessToken
+      user: result.user,
+      accessToken: result.accessToken,
     },
   });
-
 });
-
 
 const get_my_profile = catchAsyncResponse(async (req, res) => {
   const { email } = req.user as { email: string };
@@ -43,7 +51,6 @@ const get_my_profile = catchAsyncResponse(async (req, res) => {
     data: result,
   });
 });
-
 
 const refresh_token = catchAsyncResponse(async (req, res) => {
   const { refreshToken } = req.cookies;
@@ -81,7 +88,11 @@ const forget_password = catchAsyncResponse(async (req, res) => {
 
 const reset_password = catchAsyncResponse(async (req, res) => {
   const { token, newPassword, email } = req.body;
-  const result = await AuthService.reset_password_into_db(token, email, newPassword);
+  const result = await AuthService.reset_password_into_db(
+    token,
+    email,
+    newPassword,
+  );
   manageResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -89,7 +100,6 @@ const reset_password = catchAsyncResponse(async (req, res) => {
     data: result,
   });
 });
-
 
 export const AuthController = {
   register_user,

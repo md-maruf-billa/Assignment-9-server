@@ -8,12 +8,24 @@ import { EmailSender } from '../../utils/emailSender';
 import { AppError } from './../../utils/AppError';
 import { Role } from '@prisma/client';
 
-const register_user_into_db = async (payload: any) => {
-
+const register_user_into_db = async (payload: {
+  email: string;
+  password: string;
+  role: Role;
+}) => {
   if (!payload.email || !payload.password) {
-    throw new AppError('Email and password are required', httpStatus.BAD_REQUEST);
+    throw new AppError(
+      'Email and password are required',
+      httpStatus.BAD_REQUEST,
+    );
   }
-  const isAccountExists = await prisma.account.findUnique({ where: { email: payload.email } });
+
+  if (!payload.role) {
+    throw new AppError('Role is required', httpStatus.BAD_REQUEST);
+  }
+  const isAccountExists = await prisma.account.findUnique({
+    where: { email: payload.email },
+  });
 
   if (isAccountExists) {
     throw new AppError('Account already exists', httpStatus.BAD_REQUEST);
@@ -29,26 +41,47 @@ const register_user_into_db = async (payload: any) => {
   const accountData = {
     email: payload.email,
     password: hashedPassword,
-    role: Role.USER
-  }
+    role: payload.role.toUpperCase() as Role,
+  };
   const result = await prisma.$transaction(async tx => {
-    const createdAccount = await tx.account.create({ data: accountData })
+    const createdAccount = await tx.account.create({ data: accountData });
     const userData = {
-      name: payload.name,
       accountId: createdAccount.id,
+    };
+
+    if (payload.role === 'COMPANY') {
+      await tx.company.create({ data: userData });
     }
-    await tx.user.create({ data: userData })
-    return createdAccount
-  })
+
+    if (payload.role === 'USER') {
+      await tx.user.create({ data: userData });
+    }
+    const finalUser = await tx.account.findUnique({
+      where: { email: payload.email },
+      include: {
+        company: true,
+        user: true,
+        admin: true,
+      },
+    });
+    return finalUser;
+  });
+  console.log('result', result);
   return result;
 };
 
-const login_user_from_db = async (payload: { email: string; password: string }) => {
-  const isUserExists = await prisma.account.findUnique(
-    {
-      where: { email: payload.email, isActive: "ACTIVE", isDeleted: false }
-    }
-  )
+const login_user_from_db = async (payload: {
+  email: string;
+  password: string;
+}) => {
+  const isUserExists = await prisma.account.findUnique({
+    where: { email: payload.email, isActive: 'ACTIVE', isDeleted: false },
+    include: {
+      company: true,
+      user: true,
+      admin: true,
+    },
+  });
   if (!isUserExists) {
     throw new AppError('Account not found', httpStatus.NOT_FOUND);
   }
@@ -82,13 +115,11 @@ const login_user_from_db = async (payload: { email: string; password: string }) 
     configs.jwt.refresh_expires as string,
   );
   return {
+    ...userData,
     accessToken: accessToken,
     refreshToken: refreshToken,
   };
 };
-
-
-
 
 const get_my_profile_from_db = async (email: string) => {
   const user = await prisma.account.findUnique({
@@ -96,8 +127,8 @@ const get_my_profile_from_db = async (email: string) => {
     include: {
       company: true,
       user: true,
-      admin: true
-    }
+      admin: true,
+    },
   });
 
   if (!user) {
@@ -105,7 +136,6 @@ const get_my_profile_from_db = async (email: string) => {
   }
   return user;
 };
-
 
 const refresh_token_from_db = async (token: string) => {
   let decodedData;
@@ -148,16 +178,16 @@ const change_password_from_db = async (
     where: {
       email: user.email,
       isDeleted: false,
-      isActive: "ACTIVE"
+      isActive: 'ACTIVE',
     },
   });
   if (!isExistAccount) {
-    throw new AppError("Account not found !", httpStatus.NOT_FOUND)
+    throw new AppError('Account not found !', httpStatus.NOT_FOUND);
   }
 
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.oldPassword,
-    isExistAccount.password
+    isExistAccount.password,
   );
 
   if (!isCorrectPassword) {
@@ -175,16 +205,15 @@ const change_password_from_db = async (
     },
   });
 
-  return "Password update is successful."
+  return 'Password update is successful.';
 };
 
 const forget_password_from_db = async (email: string) => {
-
   const isAccountExists = await prisma.account.findUnique({
     where: {
       email: email,
       isDeleted: false,
-      isActive: "ACTIVE"
+      isActive: 'ACTIVE',
     },
   });
 
@@ -206,7 +235,7 @@ const forget_password_from_db = async (email: string) => {
 
   await EmailSender(email, 'Reset Password Link', emailTemplate);
 
-  return 'Reset password link sent to your email!'
+  return 'Reset password link sent to your email!';
 };
 
 const reset_password_into_db = async (
@@ -228,11 +257,11 @@ const reset_password_into_db = async (
     where: {
       email: decodedData.email,
       isDeleted: false,
-      isActive: "ACTIVE"
+      isActive: 'ACTIVE',
     },
   });
   if (!isAccountExists) {
-    throw new AppError("Account not found!!", httpStatus.NOT_FOUND)
+    throw new AppError('Account not found!!', httpStatus.NOT_FOUND);
   }
   if (isAccountExists.email !== email) {
     throw new AppError('Invalid email', httpStatus.UNAUTHORIZED);
@@ -249,8 +278,8 @@ const reset_password_into_db = async (
     },
   });
 
-  return 'Password reset successfully!'
-}
+  return 'Password reset successfully!';
+};
 
 export const AuthService = {
   register_user_into_db,
