@@ -9,6 +9,7 @@ import { AppError } from './../../utils/AppError';
 import { Role } from '@prisma/client';
 
 const register_user_into_db = async (payload: {
+  name: string;
   email: string;
   password: string;
   role: Role;
@@ -45,16 +46,17 @@ const register_user_into_db = async (payload: {
   };
   const result = await prisma.$transaction(async tx => {
     const createdAccount = await tx.account.create({ data: accountData });
-    const userData = {
-      accountId: createdAccount.id,
-    };
-
     if (payload.role === 'COMPANY') {
-      await tx.company.create({ data: userData });
+      await tx.company.create({
+        data: {
+          accountId: createdAccount.id,
+          name: payload.name
+        }
+      });
     }
 
     if (payload.role === 'USER') {
-      await tx.user.create({ data: userData });
+      await tx.user.create({ data: { accountId: createdAccount.id, name: payload.name } });
     }
     const finalUser = await tx.account.findUnique({
       where: { email: payload.email },
@@ -66,7 +68,6 @@ const register_user_into_db = async (payload: {
     });
     return finalUser;
   });
-  console.log('result', result);
   return result;
 };
 
