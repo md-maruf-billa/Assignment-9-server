@@ -37,8 +37,8 @@ const update_company_info = catchAsyncResponse(async (req, res) => {
 
 
 const delete_account = catchAsyncResponse(async (req, res) => {
-    const { id } = req?.params;
-    const result = await company_services.delete_account_into_db(id as string);
+    const { email } = req.user;
+    await company_services.delete_account_into_db(email as string);
     manageResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

@@ -1,23 +1,27 @@
 import { Review } from '@prisma/client';
 import { prisma } from '../../utils/Prisma';
-
 import { AppError } from '../../utils/AppError';
 import status from 'http-status';
 
 const getReview = async () => {
-  const result = await prisma.review.findMany();
+  const result = await prisma.review.findMany({ where: { isDeleted: false } });
   return result;
 };
 const getSingleReview = async (id: string) => {
-  const result = await prisma.review.findUniqueOrThrow({
-    where: { id: id },
-  });
-  return result;
+  const isExistReview = await prisma.review.findUnique({ where: { id, isDeleted: false } })
+  if (!isExistReview) {
+    throw new AppError("Review not found !!", status.NOT_FOUND)
+  }
+  return isExistReview;
 };
+
 const getReviewByUserId = async (id: string) => {
   const result = await prisma.review.findMany({
-    where: { userId: id },
+    where: { accountId: id, isDeleted: false },
   });
+  if (!result) {
+    throw new AppError("Review not found !!", status.NOT_FOUND)
+  }
   return result;
 };
 
@@ -36,7 +40,7 @@ const updateReview = async (
   const existing = await prisma.review.findUniqueOrThrow({
     where: { id: reviewId, isDeleted: false },
   });
-  if (!existing || existing.userId !== userId) {
+  if (!existing || existing.accountId !== userId) {
     throw new AppError('Unauthorized or review not found', status.UNAUTHORIZED);
   }
   const result = await prisma.review.update({
@@ -50,7 +54,7 @@ const deleteReview = async (reviewId: string, userId: string) => {
     where: { id: reviewId, isDeleted: false },
   });
 
-  if (existing?.userId !== userId) {
+  if (existing?.accountId !== userId) {
     throw new AppError(
       'Unauthorized to delete this review',
       status.UNAUTHORIZED,
