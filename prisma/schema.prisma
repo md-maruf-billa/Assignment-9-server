@@ -24,16 +24,16 @@ enum ActiveStatus {
   INACTIVE
 }
 
-model Category {
-  id      String   @id @default(uuid())
-  name    String   @unique
-  reviews Review[]
-}
-
 enum ReviewStatus {
   PENDING
   APPROVED
   UNPUBLISHED
+}
+
+model Category {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  reviews Review[]
 }
 
 model Account {
@@ -59,7 +59,7 @@ model Account {
 
 model User {
   id        String  @id @default(uuid())
-  name      String
+  name      String?
   accountId String  @unique
   account   Account @relation("AccountUser", fields: [accountId], references: [id])
 
@@ -72,7 +72,7 @@ model User {
 
 model Company {
   id        String  @id @default(uuid())
-  name      String
+  name      String?
   accountId String  @unique
   account   Account @relation("AccountCompany", fields: [accountId], references: [id])
 
@@ -88,7 +88,7 @@ model Company {
 
 model Admin {
   id        String  @id @default(uuid())
-  name      String
+  name      String?
   accountId String  @unique
   account   Account @relation("AccountAdmin", fields: [accountId], references: [id])
 

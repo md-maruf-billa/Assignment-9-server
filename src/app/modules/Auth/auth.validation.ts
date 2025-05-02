@@ -3,7 +3,7 @@ import { z } from 'zod';
 const registerUser = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  name: z.string()
+  role: z.string(),
 });
 
 const loginUser = z.object({
@@ -24,13 +24,15 @@ const forgotPassword = z.object({
   email: z.string().email(),
 });
 const resetPassword = z.object({
-  token: z.string(), newPassword: z.string(), email: z.string()
-})
+  token: z.string(),
+  newPassword: z.string(),
+  email: z.string(),
+});
 export const AuthValidation = {
   registerUser,
   loginUser,
   getMyProfile,
   forgotPassword,
   changePassword,
-  resetPassword
+  resetPassword,
 };
