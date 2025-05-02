@@ -1,3 +1,5 @@
-import { prisma } from "../../utils/Prisma";
+import { prisma } from '../../utils/Prisma';
 
-const getusers = async () => { };
+console.log('User service loaded');
+
+const getusers = async () => {};
