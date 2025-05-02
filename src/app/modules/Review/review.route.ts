@@ -4,35 +4,32 @@ import RequestValidator from '../../middlewares/requestValidator';
 import { reviewValidation } from './review.validation';
 import auth from '../../middlewares/auth';
 
-import { Role } from '@prisma/client';
-
 const router = Router();
-router.get('/', auth(Role.ADMIN, Role.USER), reviewController.getReview);
+router.get('/', reviewController.getReview);
 router.get(
   '/:id',
-  auth(Role.ADMIN, Role.USER),
   reviewController.getSingleReview,
 );
 router.get(
   '/user/:userId',
-  auth(Role.ADMIN, Role.USER),
+  auth("ADMIN", "USER"),
   reviewController.getReviewByUserId,
 );
 router.post(
   '/create-review',
+  auth("ADMIN", "USER"),
   RequestValidator(reviewValidation.createReview),
-  auth(Role.ADMIN, Role.USER),
   reviewController.createReview,
 );
 router.patch(
   '/update-review',
+  auth("ADMIN", "USER"),
   RequestValidator(reviewValidation.updateReview),
-  auth(Role.ADMIN, Role.USER),
   reviewController.updateReview,
 );
 router.delete(
   '/delete-review',
-  auth(Role.ADMIN, Role.USER),
+  auth("ADMIN", "USER"),
   reviewController.deleteReview,
 );
 router.post(

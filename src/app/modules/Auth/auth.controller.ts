@@ -17,15 +17,6 @@ const register_user = catchAsyncResponse(async (req, res) => {
 const login_user = catchAsyncResponse(async (req, res) => {
   const result = await AuthService.login_user_from_db(req.body);
 
-  if (!result) {
-    manageResponse(res, {
-      statusCode: httpStatus.UNAUTHORIZED,
-      success: false,
-      message: 'Invalid email or password',
-      data: null,
-    });
-    return;
-  }
   res.cookie('refreshToken', result.refreshToken, {
     secure: configs.env == 'production',
     httpOnly: true,

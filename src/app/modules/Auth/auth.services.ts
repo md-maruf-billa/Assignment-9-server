@@ -76,7 +76,7 @@ const login_user_from_db = async (payload: {
   password: string;
 }) => {
   const isUserExists = await prisma.account.findUnique({
-    where: { email: payload.email, isActive: 'ACTIVE', isDeleted: false },
+    where: { email: payload.email, status: 'ACTIVE', isDeleted: false },
     include: {
       company: true,
       user: true,
@@ -124,7 +124,7 @@ const login_user_from_db = async (payload: {
 
 const get_my_profile_from_db = async (email: string) => {
   const user = await prisma.account.findUnique({
-    where: { email: email, isDeleted: false },
+    where: { email: email, isDeleted: false, status: "ACTIVE" },
     include: {
       company: true,
       user: true,
@@ -153,6 +153,7 @@ const refresh_token_from_db = async (token: string) => {
     where: {
       email: decodedData.email,
       isDeleted: false,
+      status: "ACTIVE"
     },
   });
 
@@ -179,7 +180,7 @@ const change_password_from_db = async (
     where: {
       email: user.email,
       isDeleted: false,
-      isActive: 'ACTIVE',
+      status: 'ACTIVE',
     },
   });
   if (!isExistAccount) {
@@ -214,7 +215,7 @@ const forget_password_from_db = async (email: string) => {
     where: {
       email: email,
       isDeleted: false,
-      isActive: 'ACTIVE',
+      status: 'ACTIVE',
     },
   });
 
@@ -258,7 +259,7 @@ const reset_password_into_db = async (
     where: {
       email: decodedData.email,
       isDeleted: false,
-      isActive: 'ACTIVE',
+      status: 'ACTIVE',
     },
   });
   if (!isAccountExists) {
