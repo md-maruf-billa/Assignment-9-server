@@ -1,0 +1,78 @@
+import status from 'http-status';
+import catchAsyncResponse from '../../utils/catchAsync';
+import manageResponse from '../../utils/manageRes';
+import { productService } from './product.service';
+
+const getProducts = catchAsyncResponse(async (req, res) => {
+  const result = await productService.getProduct();
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Products fetched successfully',
+    data: result,
+  });
+});
+
+const getSingleProduct = catchAsyncResponse(async (req, res) => {
+  const result = await productService.getSingleProduct(req.params.id);
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Single Product fetched successfully',
+    data: result,
+  });
+});
+
+const createProduct = catchAsyncResponse(async (req, res) => {
+  const result = await productService.createProduct(req.body);
+  manageResponse(res, {
+    statusCode: status.CREATED,
+    success: true,
+    message: 'Product created successfully',
+    data: result,
+  });
+});
+const updateProduct = catchAsyncResponse(async (req, res) => {
+  const productId = req.query.productId;
+  if (!productId) {
+    return manageResponse(res, {
+      statusCode: status.BAD_REQUEST,
+      success: false,
+      message: 'Product ID is required',
+    });
+  }
+  const result = await productService.updateProduct(
+    productId as string,
+    req.body,
+  );
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Product updated successfully',
+    data: result,
+  });
+});
+const softDeleteProduct = catchAsyncResponse(async (req, res) => {
+  const productId = req.query.productId;
+  if (!productId) {
+    return manageResponse(res, {
+      statusCode: status.BAD_REQUEST,
+      success: false,
+      message: 'Product ID is required',
+    });
+  }
+  const result = await productService.softDeleteProduct(productId as string);
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Product deleted successfully',
+    data: result,
+  });
+});
+export const productController = {
+  getProducts,
+  getSingleProduct,
+  createProduct,
+  updateProduct,
+  softDeleteProduct,
+};
