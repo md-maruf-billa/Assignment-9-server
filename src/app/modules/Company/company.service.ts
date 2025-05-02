@@ -14,7 +14,7 @@ const get_all_companies_from_db = async () => {
 }
 
 const get_specific_company_from_db = async (id: string) => {
-    const result = await prisma.company.findUnique({ where: { id } })
+    const result = await prisma.company.findUnique({ where: { id }, include: { account: true } })
     if (!result) {
         throw new AppError("Company not found !", httpStatus.NOT_FOUND)
     }
@@ -33,8 +33,18 @@ const update_company_info_into_db = async (id: string, req: Request) => {
     return updatedInfo;
 }
 
+const delete_account_into_db = async (id: string) => {
+    const isExistAccount = await prisma.account.findUnique({ where: { id } })
+    if (!isExistAccount) {
+        throw new AppError("Account not found !!", httpStatus.NOT_FOUND)
+    }
+    await prisma.account.update({ where: { id }, data: { isDeleted: true } })
+    return;
+}
+
 export const company_services = {
     get_all_companies_from_db,
     get_specific_company_from_db,
-    update_company_info_into_db
+    update_company_info_into_db,
+    delete_account_into_db
 }

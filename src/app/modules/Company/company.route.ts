@@ -19,4 +19,7 @@ companyRoute.patch(
     })
 
 
+companyRoute.delete("/:id", auth("ADMIN", "COMPANY"), company_controllers.delete_account)
+
+
 export default companyRoute;

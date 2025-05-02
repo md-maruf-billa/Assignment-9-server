@@ -35,8 +35,21 @@ const update_company_info = catchAsyncResponse(async (req, res) => {
     })
 })
 
+
+const delete_account = catchAsyncResponse(async (req, res) => {
+    const { id } = req?.params;
+    const result = await company_services.delete_account_into_db(id as string);
+    manageResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Account deleted successful.",
+        data: null
+    })
+})
+
 export const company_controllers = {
     get_all_companies,
     get_specific_company,
-    update_company_info
+    update_company_info,
+    delete_account
 }
