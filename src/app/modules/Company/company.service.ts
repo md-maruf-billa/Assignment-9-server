@@ -10,14 +10,15 @@ const get_all_companies_from_db = async () => {
             isDeleted: false
         },
         include: {
-            account: true
+            account: true,
+            products: true
         }
     })
     return result;
 }
 
 const get_specific_company_from_db = async (id: string) => {
-    const result = await prisma.company.findUnique({ where: { id, isDeleted: false }, include: { account: true } })
+    const result = await prisma.company.findUnique({ where: { id, isDeleted: false }, include: { account: true, products: true } })
     if (!result) {
         throw new AppError("Company not found !", httpStatus.NOT_FOUND)
     }
