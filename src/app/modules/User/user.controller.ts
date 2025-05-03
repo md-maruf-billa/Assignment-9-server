@@ -13,9 +13,6 @@ const getUsers = catchAsyncResponse(async (
         statusCode: status.OK,
         success: true,
         message: 'User retrieved successfully',
-        // meta: {
-        //     total: result.count
-        // },
         data: result,
     });
 });
