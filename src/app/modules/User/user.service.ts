@@ -129,8 +129,9 @@ const updateUser = async (
     return updateuserInfo;
 };
 
-const deleteUserFromDB = async (id: string) => {
 
+// delete user
+const deleteUserFromDB = async (id: string) => {
     const isExistUser = await prisma.user.findUnique({
         where: {
             id,

@@ -2,10 +2,17 @@ import { Category } from '@prisma/client';
 import { prisma } from '../../utils/Prisma';
 import { AppError } from '../../utils/AppError';
 import httpStatus from 'http-status';
+import { Request } from 'express';
+import uploadCloud from '../../utils/cloudinary';
 
-const createCategory = async (payload: Category) => {
+const createCategory = async (req: Request) => {
+    if (req.file) {
+        const uploadedImage = await uploadCloud(req.file);
+        req.body.categoryImage = uploadedImage?.secure_url;
+    };
+
     return await prisma.category.create({
-        data: payload,
+        data: req.body
     });
 };
 
@@ -42,7 +49,7 @@ const getCategoryById = async (id: string) => {
 
 const updateCategory = async (
     id: string,
-    payload: Category
+    req: Request
 ) => {
     const isExist = await prisma.category.findUnique({
         where: {
@@ -56,11 +63,25 @@ const updateCategory = async (
         );
     };
 
+    const dataToUpdate: Partial<{
+        name: string;
+        categoryImage: string;
+    }> = {};
+
+    if (req.body.name) {
+        dataToUpdate.name = req.body.name;
+    }
+
+    if (req.file) {
+        const uploadedImage = await uploadCloud(req.file);
+        dataToUpdate.categoryImage = uploadedImage?.secure_url;
+    }
+
     return await prisma.category.update({
         where: {
             id
         },
-        data: payload
+        data: dataToUpdate
     });
 };
 
