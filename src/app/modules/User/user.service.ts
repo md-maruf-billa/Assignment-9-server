@@ -129,7 +129,7 @@ const updateUser = async (
     return updateuserInfo;
 };
 
-const deleteUser = async (id: string) => {
+const deleteUserFromDB = async (id: string) => {
 
     const isExistUser = await prisma.user.findUnique({
         where: {
@@ -146,6 +146,7 @@ const deleteUser = async (id: string) => {
             status.NOT_FOUND
         );
     };
+
 
     return await prisma.$transaction(async (tClient) => {
         const deleteUser = await tClient.user.update({
@@ -174,5 +175,5 @@ export const userService = {
     getUsers,
     getUserById,
     updateUser,
-    deleteUser,
+    deleteUserFromDB,
 };

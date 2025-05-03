@@ -30,6 +30,8 @@ router.patch(
 
 router.delete(
     '/delete/:id',
+    auth("ADMIN"),
+    userController.deleteUser
 );
 
 export const userRouters = router;
