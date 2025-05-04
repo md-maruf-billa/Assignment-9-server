@@ -2,6 +2,8 @@ import { Product } from '@prisma/client';
 import { prisma } from '../../utils/Prisma';
 import { AppError } from '../../utils/AppError';
 import httpStatus from 'http-status';
+import { Request } from 'express';
+import uploadCloud from '../../utils/cloudinary';
 
 const getProduct = async () => {
   const result = await prisma.product.findMany();
@@ -18,9 +20,13 @@ const getSingleProduct = async (id: string) => {
   return result;
 };
 
-const createProduct = async (data: Product) => {
+const createProduct = async (req: Request) => {
+  if (req.file) {
+    const uploadedImage = await uploadCloud(req.file);
+    req.body.imageUrl = uploadedImage?.secure_url
+  }
   const result = await prisma.product.create({
-    data: data,
+    data: req.body,
   });
   return result;
 };

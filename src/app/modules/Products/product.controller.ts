@@ -2,6 +2,7 @@ import status from 'http-status';
 import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { productService } from './product.service';
+import { Request } from 'express';
 
 const getProducts = catchAsyncResponse(async (req, res) => {
   const result = await productService.getProduct();
@@ -24,7 +25,7 @@ const getSingleProduct = catchAsyncResponse(async (req, res) => {
 });
 
 const createProduct = catchAsyncResponse(async (req, res) => {
-  const result = await productService.createProduct(req.body);
+  const result = await productService.createProduct(req as Request);
   manageResponse(res, {
     statusCode: status.CREATED,
     success: true,
