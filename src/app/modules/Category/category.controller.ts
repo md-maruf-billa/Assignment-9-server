@@ -4,7 +4,7 @@ import manageResponse from '../../utils/manageRes';
 import { categoryService } from './category.service';
 
 const createCategory = catchAsyncResponse(async (req, res) => {
-    const result = await categoryService.createCategory(req.body);
+    const result = await categoryService.createCategory(req);
     manageResponse(res, {
         statusCode: status.CREATED,
         success: true,
@@ -39,7 +39,7 @@ const getCategoryById = catchAsyncResponse(async (req, res) => {
 
 const updateCategory = catchAsyncResponse(async (req, res) => {
     const { id } = req.params;
-    const result = await categoryService.updateCategory(id, req.body);
+    const result = await categoryService.updateCategory(id, req);
     manageResponse(res, {
         statusCode: status.OK,
         success: true,
