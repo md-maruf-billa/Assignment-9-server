@@ -39,8 +39,8 @@ const updateUser = catchAsyncResponse(async (
     req,
     res
 ) => {
-    const { id } = req.params;
-    const result = await userService.updateUser(id, req);
+    const { email } = req.user;
+    const result = await userService.updateUser(email, req);
     manageResponse(res, {
         statusCode: status.OK,
         success: true,
@@ -55,8 +55,8 @@ const deleteUser = catchAsyncResponse(async (
     req,
     res
 ) => {
-    const { id } = req.params;
-    const result = await userService.deleteUserFromDB(id);
+    const { email } = req.user;
+    const result = await userService.deleteUserFromDB(email);
     manageResponse(res, {
         statusCode: status.OK,
         success: true,

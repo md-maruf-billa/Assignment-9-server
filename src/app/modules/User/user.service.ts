@@ -70,32 +70,24 @@ const getUserById = async (id: string) => {
 
 // update user
 const updateUser = async (
-    id: string,
+    email: string,
     req: Request
 ) => {
 
-    // user exists and verification
-    const isExistUser = await prisma.user.findUnique({
+    // find account and user account
+    const isAccountExist = await prisma.account.findUnique({
         where: {
-            id,
+            email,
             isDeleted: false
         },
         include: {
-            account: true
-        },
-    });
-    if (!isExistUser) {
+            user: true
+        }
+    })
+    if (!isAccountExist) {
         throw new AppError(
             'User not found',
             status.NOT_FOUND
-        );
-    };
-
-    const user = req.user;
-    if (user.email !== isExistUser.account.email) {
-        throw new AppError(
-            'You are not authorized to update this user',
-            status.UNAUTHORIZED
         );
     };
 
@@ -108,7 +100,7 @@ const updateUser = async (
     const updateuserInfo = await prisma.$transaction(async (tClient) => {
         const updateData = await tClient.user.update({
             where: {
-                id: isExistUser.id
+                id: isAccountExist?.user?.id
             },
             data: req.body,
             include: {
@@ -118,7 +110,7 @@ const updateUser = async (
 
         await tClient.account.update({
             where: {
-                id: isExistUser.account.id
+                email
             },
             data: {
                 isCompleteProfile: true
@@ -131,19 +123,19 @@ const updateUser = async (
 
 
 // delete user
-const deleteUserFromDB = async (id: string) => {
-    const isExistUser = await prisma.user.findUnique({
+const deleteUserFromDB = async (email: string) => {
+    const isAccountExist = await prisma.account.findUnique({
         where: {
-            id,
+            email,
             isDeleted: false
         },
         include: {
-            account: true
+            user: true
         },
     });
-    if (!isExistUser) {
+    if (!isAccountExist) {
         throw new AppError(
-            'User not found',
+            'Account not found',
             status.NOT_FOUND
         );
     };
@@ -152,7 +144,7 @@ const deleteUserFromDB = async (id: string) => {
     return await prisma.$transaction(async (tClient) => {
         const deleteUser = await tClient.user.update({
             where: {
-                id: isExistUser.id
+                id: isAccountExist?.user?.id
             },
             data: {
                 isDeleted: true
@@ -161,7 +153,7 @@ const deleteUserFromDB = async (id: string) => {
 
         await tClient.account.update({
             where: {
-                id: isExistUser.account.id
+                email
             },
             data: {
                 isDeleted: true
