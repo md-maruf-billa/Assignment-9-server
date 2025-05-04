@@ -6,6 +6,7 @@ const createCategory = z.object({
 
 const updateCategory = z.object({
   name: z.string().min(1, { message: 'Category name is required' }).optional(),
+  categoryImage: z.string().optional(),
 });
 
 export const categoryValidation = {
