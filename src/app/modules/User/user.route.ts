@@ -18,8 +18,8 @@ router.get(
 );
 
 router.patch(
-    '/update/:id',
-    auth("USER", "ADMIN"),
+    '/',
+    auth("USER",),
     uploader.single("image"),
     (req: Request, res: Response, next: NextFunction) => {
         req.body = userValidation.updateUser.parse(JSON.parse(req.body.data))
@@ -29,8 +29,8 @@ router.patch(
 
 
 router.delete(
-    '/delete/:id',
-    auth("ADMIN"),
+    '/',
+    auth("USER",),
     userController.deleteUser
 );
 
