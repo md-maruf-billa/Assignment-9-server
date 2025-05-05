@@ -32,7 +32,7 @@ const login_user = catchAsyncResponse(async (req, res) => {
 });
 
 const get_my_profile = catchAsyncResponse(async (req, res) => {
-  const { email } = req.user
+  const { email } = req?.user;
   const result = await AuthService.get_my_profile_from_db(email);
   manageResponse(res, {
     statusCode: httpStatus.OK,

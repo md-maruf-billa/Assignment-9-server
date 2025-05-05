@@ -12,6 +12,7 @@ const getReview = catchAsyncResponse(async (req, res) => {
     data: result,
   });
 });
+
 const getSingleReview = catchAsyncResponse(async (req, res) => {
   const result = await reviewService.getSingleReview(req.params.id);
   manageResponse(res, {
@@ -21,6 +22,7 @@ const getSingleReview = catchAsyncResponse(async (req, res) => {
     data: result,
   });
 });
+
 const getReviewByUserId = catchAsyncResponse(async (req, res) => {
   const result = await reviewService.getReviewByUserId(req.params.userId);
   manageResponse(res, {

@@ -4,6 +4,7 @@ import { AppError } from '../../utils/AppError';
 import httpStatus from 'http-status';
 import { Request } from 'express';
 import uploadCloud from '../../utils/cloudinary';
+import { IOptions } from '../../utils/peginationHelper';
 
 const createCategory = async (req: Request) => {
     if (req.file) {
@@ -17,7 +18,14 @@ const createCategory = async (req: Request) => {
 };
 
 
-const getCategories = async () => {
+const getCategories = async (
+    filters: any,
+    options: IOptions
+) => {
+
+    console.log(filters);
+    console.log(options);
+
     const result = await prisma.category.findMany({
         include: {
             reviews: true,
