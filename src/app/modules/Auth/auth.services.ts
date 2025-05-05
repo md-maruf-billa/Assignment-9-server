@@ -116,7 +116,6 @@ const login_user_from_db = async (payload: {
     configs.jwt.refresh_expires as string,
   );
   return {
-    ...userData,
     accessToken: accessToken,
     refreshToken: refreshToken,
   };
@@ -125,11 +124,16 @@ const login_user_from_db = async (payload: {
 const get_my_profile_from_db = async (email: string) => {
   const user = await prisma.account.findUnique({
     where: { email: email, isDeleted: false, status: "ACTIVE" },
-    include: {
-      company: true,
+    select: {
+      id: true,
+      status: true,
+      email: true,
+      role: true,
       user: true,
       admin: true,
-    },
+      company: true,
+      createdAt: true
+    }
   });
 
   if (!user) {
@@ -137,6 +141,7 @@ const get_my_profile_from_db = async (email: string) => {
   }
   return user;
 };
+
 
 const refresh_token_from_db = async (token: string) => {
   let decodedData;
