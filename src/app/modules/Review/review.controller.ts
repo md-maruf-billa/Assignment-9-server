@@ -69,6 +69,15 @@ const deleteReview = catchAsyncResponse(async (req, res) => {
     data: null,
   });
 });
+const getAllPremiumReview = catchAsyncResponse(async (req, res) => {
+  const result = await reviewService.getAllPremiumReview();
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'All premium reviews fetched successfully',
+    data: result,
+  });
+});
 export const reviewController = {
   createReview,
   updateReview,
@@ -76,4 +85,5 @@ export const reviewController = {
   getReview,
   getSingleReview,
   getReviewByUserId,
+  getAllPremiumReview,
 };

@@ -5,6 +5,11 @@ import { reviewValidation } from './review.validation';
 import auth from '../../middlewares/auth';
 
 const router = Router();
+router.get(
+  '/premiumReviews',
+  auth('ADMIN'),
+  reviewController.getAllPremiumReview,
+);
 router.get('/', reviewController.getReview);
 router.get('/:id', reviewController.getSingleReview);
 router.get(
