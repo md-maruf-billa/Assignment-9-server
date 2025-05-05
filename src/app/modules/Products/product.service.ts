@@ -26,12 +26,12 @@ const createProduct = async (req: Request) => {
   if (!isAccountExist) {
     throw new AppError("Company account not authorized !!", httpStatus.NOT_FOUND)
   }
-
   if (req.file) {
     const uploadedImage = await uploadCloud(req.file);
     req.body.imageUrl = uploadedImage?.secure_url
   }
   req.body.companyId = isAccountExist?.company?.id
+
   const result = await prisma.product.create({
     data: req.body,
   });
