@@ -22,7 +22,7 @@ const castVote = async (
     data: { reviewId, accountId, type },
   });
 };
-
+// console.log();'
 // const unvote = async (accountId: string, reviewId: string) => {
 //   const vote = await prisma.vote.findUnique({
 //     where: { reviewId_accountId: { reviewId, accountId } }
