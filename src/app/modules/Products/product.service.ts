@@ -2,6 +2,8 @@ import { Product } from '@prisma/client';
 import { prisma } from '../../utils/Prisma';
 import { AppError } from '../../utils/AppError';
 import httpStatus from 'http-status';
+import { Request } from 'express';
+import uploadCloud from '../../utils/cloudinary';
 
 const getProduct = async () => {
   const result = await prisma.product.findMany();
@@ -18,12 +20,24 @@ const getSingleProduct = async (id: string) => {
   return result;
 };
 
-const createProduct = async (data: Product) => {
+const createProduct = async (req: Request) => {
+  const { email } = req.user;
+  const isAccountExist = await prisma.account.findUnique({ where: { email }, include: { company: true } })
+  if (!isAccountExist) {
+    throw new AppError("Company account not authorized !!", httpStatus.NOT_FOUND)
+  }
+  if (req.file) {
+    const uploadedImage = await uploadCloud(req.file);
+    req.body.imageUrl = uploadedImage?.secure_url
+  }
+  req.body.companyId = isAccountExist?.company?.id
+
   const result = await prisma.product.create({
-    data: data,
+    data: req.body,
   });
   return result;
 };
+
 const updateProduct = async (id: string, data: Product) => {
   const isExistProduct = await prisma.product.findUnique({ where: { id } })
   if (!isExistProduct) {

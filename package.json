@@ -34,13 +34,15 @@
   },
   "description": "",
   "scripts": {
+    "postinstall": "prisma generate",
+    "start": "node ./dist/server.js",
+    "vercel-build": "npm run build",
     "build": "tsc",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "npx eslint src --fix",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "prod": "node ./dist/server.js",
-    "start": "nodemon ./dist/server.js",
     "studio": "npx prisma studio"
   },
   "repository": {

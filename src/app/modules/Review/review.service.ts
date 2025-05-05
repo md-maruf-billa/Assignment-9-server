@@ -8,9 +8,11 @@ const getReview = async () => {
   return result;
 };
 const getSingleReview = async (id: string) => {
-  const isExistReview = await prisma.review.findUnique({ where: { id, isDeleted: false } })
+  const isExistReview = await prisma.review.findUnique({
+    where: { id, isDeleted: false },
+  });
   if (!isExistReview) {
-    throw new AppError("Review not found !!", status.NOT_FOUND)
+    throw new AppError('Review not found !!', status.NOT_FOUND);
   }
   return isExistReview;
 };
@@ -20,12 +22,24 @@ const getReviewByUserId = async (id: string) => {
     where: { accountId: id, isDeleted: false },
   });
   if (!result) {
-    throw new AppError("Review not found !!", status.NOT_FOUND)
+    throw new AppError('Review not found !!', status.NOT_FOUND);
   }
   return result;
 };
 
-const createReview = async (reviewData: Review) => {
+const createReview = async (reviewData: Review, userId: string) => {
+  const isProfileUpdate = await prisma.account.findUnique({
+    where: { id: userId },
+  });
+  if (!isProfileUpdate) {
+    throw new AppError('User not found !!', status.NOT_FOUND);
+  }
+  if (isProfileUpdate.isCompleteProfile === false) {
+    throw new AppError(
+      'Please complete your profile first',
+      status.BAD_REQUEST,
+    );
+  }
   const result = await prisma.review.create({
     data: reviewData,
   });
