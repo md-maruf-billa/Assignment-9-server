@@ -140,11 +140,14 @@ model Vote {
   id        String   @id @default(uuid())
   reviewId  String
   accountId String
+  type      VoteType
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   review    Review   @relation(fields: [reviewId], references: [id])
   account   Account  @relation(fields: [accountId], references: [id])
+  isDeleted Boolean  @default(false)
 
+  @@unique([reviewId, accountId])
   @@map("votes")
 }
 
@@ -160,4 +163,9 @@ model ReviewComment {
   isDeleted Boolean  @default(false)
 
   @@map("review_comments")
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
 }
