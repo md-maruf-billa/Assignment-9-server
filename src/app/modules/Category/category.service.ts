@@ -48,7 +48,7 @@ const getCategories = async (
         andConditions.push({
             AND: Object.keys(filterData).map(key => ({
                 [key]: {
-                    equals: (filterData as any)[key],
+                    contains: (filterData as any)[key],
                     mode: 'insensitive',
                 },
             })),
