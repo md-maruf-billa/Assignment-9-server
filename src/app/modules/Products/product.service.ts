@@ -21,15 +21,23 @@ const getSingleProduct = async (id: string) => {
 };
 
 const createProduct = async (req: Request) => {
+  const { email } = req.user;
+  const isAccountExist = await prisma.account.findUnique({ where: { email }, include: { company: true } })
+  if (!isAccountExist) {
+    throw new AppError("Company account not authorized !!", httpStatus.NOT_FOUND)
+  }
+
   if (req.file) {
     const uploadedImage = await uploadCloud(req.file);
     req.body.imageUrl = uploadedImage?.secure_url
   }
+  req.body.companyId = isAccountExist?.company?.id
   const result = await prisma.product.create({
     data: req.body,
   });
   return result;
 };
+
 const updateProduct = async (id: string, data: Product) => {
   const isExistProduct = await prisma.product.findUnique({ where: { id } })
   if (!isExistProduct) {
