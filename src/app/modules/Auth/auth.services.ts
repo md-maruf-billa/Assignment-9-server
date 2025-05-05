@@ -58,6 +58,9 @@ const register_user_into_db = async (payload: {
     if (payload.role === 'USER') {
       await tx.user.create({ data: { accountId: createdAccount.id, name: payload.name } });
     }
+    if (payload.role === 'ADMIN') {
+      await tx.admin.create({ data: { accountId: createdAccount.id, name: payload.name } });
+    }
     const finalUser = await tx.account.findUnique({
       where: { email: payload.email },
       include: {
@@ -129,6 +132,8 @@ const get_my_profile_from_db = async (email: string) => {
       status: true,
       email: true,
       role: true,
+
+      isCompleteProfile: true,
       user: true,
       admin: true,
       company: true,
