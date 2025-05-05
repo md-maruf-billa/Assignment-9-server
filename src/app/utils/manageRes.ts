@@ -5,10 +5,10 @@ interface IResponse<T> {
     message: string,
     data?: T,
     meta?: {
-        page: number,
-        limit: number,
-        skip: number,
-        total: number
+        page?: number,
+        limit?: number,
+        skip?: number,
+        total?: number
     }
 }
 

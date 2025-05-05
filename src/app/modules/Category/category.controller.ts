@@ -3,7 +3,7 @@ import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { categoryService } from './category.service';
 import pickQuery from '../../utils/pickQuery';
-import { categoryPaginationFields, categorySearchableFields } from './category.constant';
+import { categoryFilterableFields, categoryPaginationFields } from './category.constant';
 
 const createCategory = catchAsyncResponse(async (req, res) => {
     const result = await categoryService.createCategory(req);
@@ -18,7 +18,7 @@ const createCategory = catchAsyncResponse(async (req, res) => {
 
 const getCategories = catchAsyncResponse(async (req, res) => {
 
-    const filters = pickQuery(req.query, categorySearchableFields);
+    const filters = pickQuery(req.query, categoryFilterableFields);
     const options = pickQuery(req.query, categoryPaginationFields);
 
     const result = await categoryService.getCategories(filters, options);
@@ -26,7 +26,8 @@ const getCategories = catchAsyncResponse(async (req, res) => {
         statusCode: status.OK,
         success: true,
         message: 'Categories fetched successfully',
-        data: result,
+        meta: result.meta,
+        data: result.data,
     });
 });
 
