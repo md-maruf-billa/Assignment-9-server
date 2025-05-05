@@ -33,7 +33,8 @@ const getReviewByUserId = catchAsyncResponse(async (req, res) => {
 
 const createReview = catchAsyncResponse(async (req, res) => {
   const { userId } = req?.query;
-  console.log(userId);
+
+  // console.log(userId);
   const result = await reviewService.createReview(req.body, userId as string);
   manageResponse(res, {
     statusCode: status.CREATED,

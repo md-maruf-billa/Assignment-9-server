@@ -21,7 +21,8 @@ enum AccountStatus {
 
 enum ReviewStatus {
   PENDING
-  APPROVED
+  PUBLISHED
+  UNPUBLISHED
 }
 
 model Category {
@@ -137,17 +138,17 @@ model Review {
 }
 
 model Vote {
-  id        String   @id @default(uuid())
-  reviewId  String
-  accountId String
-  type      VoteType
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  review    Review   @relation(fields: [reviewId], references: [id])
-  account   Account  @relation(fields: [accountId], references: [id])
-  isDeleted Boolean  @default(false)
+  id           String   @id @default(uuid())
+  reviewId     String
+  accountEmail String
+  type         VoteType
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  review       Review   @relation(fields: [reviewId], references: [id])
+  account      Account  @relation(fields: [accountEmail], references: [email])
+  isDeleted    Boolean  @default(false)
 
-  @@unique([reviewId, accountId])
+  @@unique([reviewId, accountEmail])
   @@map("votes")
 }
 

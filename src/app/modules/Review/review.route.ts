@@ -6,34 +6,31 @@ import auth from '../../middlewares/auth';
 
 const router = Router();
 router.get('/', reviewController.getReview);
-router.get(
-  '/:id',
-  reviewController.getSingleReview,
-);
+router.get('/:id', reviewController.getSingleReview);
 router.get(
   '/user/:userId',
-  auth("ADMIN", "USER"),
+  auth('ADMIN', 'USER'),
   reviewController.getReviewByUserId,
 );
 router.post(
   '/create-review',
-  auth("ADMIN", "USER"),
+  auth('ADMIN', 'USER'),
   RequestValidator(reviewValidation.createReview),
   reviewController.createReview,
 );
 router.patch(
   '/update-review',
-  auth("ADMIN", "USER"),
+  auth('ADMIN', 'USER'),
   RequestValidator(reviewValidation.updateReview),
   reviewController.updateReview,
 );
 router.delete(
   '/delete-review',
-  auth("ADMIN", "USER"),
+  auth('ADMIN', 'USER'),
   reviewController.deleteReview,
 );
 router.post(
-  '/create-review',
+  '/create-review/',
   auth('USER', 'ADMIN'),
   RequestValidator(reviewValidation.createReview),
   reviewController.createReview,
