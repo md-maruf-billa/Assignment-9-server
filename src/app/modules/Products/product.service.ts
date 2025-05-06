@@ -14,9 +14,6 @@ const getProduct = async (
     const { searchTerm, ...filterData } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options);
 
-    console.log(searchTerm);
-    console.log('filterData', filterData);
-
     const andConditions: Prisma.ProductWhereInput[] = [];
 
     // Search Logic
