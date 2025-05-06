@@ -1,9 +1,9 @@
 
-export const productSearchTerm: string[] = [
-    'name',
-    'description',
-    'company',
-];
+// export const productSearchTerm: string[] = [
+//     'name',
+//     'description',
+//     'company',
+// ];
 
 export const productFilterableFields: string[] = [
     'searchTerm',

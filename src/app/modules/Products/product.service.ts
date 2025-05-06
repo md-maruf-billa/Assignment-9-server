@@ -19,6 +19,7 @@ const getProduct = async (
 
     const andConditions: Prisma.ProductWhereInput[] = [];
 
+    // Search Logic
     if (searchTerm) {
         andConditions.push({
             OR: [
@@ -43,6 +44,24 @@ const getProduct = async (
                     },
                 },
             ],
+        });
+    }
+
+    // Filter Logic
+    if (filterData.name) {
+        andConditions.push({
+            name: {
+                contains: filterData.name,
+                mode: 'insensitive',
+            },
+        });
+    }
+
+    if (filterData.price) {
+        andConditions.push({
+            price: {
+                equals: Number(filterData.price),
+            },
         });
     }
 

@@ -4,7 +4,10 @@ import manageResponse from '../../utils/manageRes';
 import { productService } from './product.service';
 import { Request } from 'express';
 import pickQuery from '../../utils/pickQuery';
-import { productFilterableFields, productPaginationFields } from './product.constant';
+import {
+  productFilterableFields,
+  productPaginationFields
+} from './product.constant';
 
 const getProducts = catchAsyncResponse(async (req, res) => {
 
