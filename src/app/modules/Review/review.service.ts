@@ -211,6 +211,16 @@ const deleteReview = async (reviewId: string, userId: string) => {
   return result;
 };
 
+const getAllPremiumReview = async () => {
+  const result = await prisma.review.findMany({
+    where: { isDeleted: false, isPremium: true },
+  });
+  if (!result) {
+    throw new AppError('No premium reviews found', status.NOT_FOUND);
+  }
+  return result;
+};
+
 export const reviewService = {
   createReview,
   updateReview,
@@ -218,4 +228,5 @@ export const reviewService = {
   getReview,
   getSingleReview,
   getReviewByUserId,
+  getAllPremiumReview,
 };

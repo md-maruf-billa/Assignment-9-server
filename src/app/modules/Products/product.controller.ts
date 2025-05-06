@@ -37,7 +37,7 @@ const updateProduct = catchAsyncResponse(async (req, res) => {
   const { productId } = req?.query;
   const result = await productService.updateProduct(
     productId as string,
-    req.body
+    req.body,
   );
   manageResponse(res, {
     statusCode: status.OK,
