@@ -21,7 +21,7 @@ const changePassword = z.object({
 });
 
 const forgotPassword = z.object({
-  email: z.string().email(),
+  email: z.string(),
 });
 const resetPassword = z.object({
   token: z.string(),
