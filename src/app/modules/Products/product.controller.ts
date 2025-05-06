@@ -3,8 +3,13 @@ import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { productService } from './product.service';
 import { Request } from 'express';
+import pickQuery from '../../utils/pickQuery';
 
 const getProducts = catchAsyncResponse(async (req, res) => {
+
+  const filters = pickQuery(req.query, []);
+  const options = pickQuery(req.query, []);
+
   const result = await productService.getProduct();
   manageResponse(res, {
     statusCode: status.OK,
