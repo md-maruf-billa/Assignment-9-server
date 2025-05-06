@@ -42,7 +42,8 @@ const getReviewByUserId = catchAsyncResponse(async (req, res) => {
 
 const createReview = catchAsyncResponse(async (req, res) => {
   const { userId } = req?.query;
-  console.log(userId);
+
+  // console.log(userId);
   const result = await reviewService.createReview(req.body, userId as string);
   manageResponse(res, {
     statusCode: status.CREATED,
@@ -77,6 +78,15 @@ const deleteReview = catchAsyncResponse(async (req, res) => {
     data: null,
   });
 });
+const getAllPremiumReview = catchAsyncResponse(async (req, res) => {
+  const result = await reviewService.getAllPremiumReview();
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'All premium reviews fetched successfully',
+    data: result,
+  });
+});
 export const reviewController = {
   createReview,
   updateReview,
@@ -84,4 +94,5 @@ export const reviewController = {
   getReview,
   getSingleReview,
   getReviewByUserId,
+  getAllPremiumReview,
 };

@@ -10,7 +10,7 @@ const createReview = z.object({
   images: z.array(z.string().url('Invalid image URL')).optional(),
   isPremium: z.boolean().optional(),
   accountId: z.string().uuid('Invalid account ID'),
-  status: z.enum(['PENDING', 'APPROVED', 'UNPUBLISHED']).optional(),
+  status: z.enum(['PENDING', 'PUBLISHED', 'UNPUBLISHED']).optional(),
   moderationNote: z.string().optional(),
 });
 
@@ -24,7 +24,7 @@ const updateReview = z.object({
   images: z.array(z.string().url('Invalid image URL')).optional(),
   isPremium: z.boolean().optional(),
   accountId: z.string().uuid('Invalid account ID').optional(),
-  status: z.enum(['PENDING', 'APPROVED', 'UNPUBLISHED']).optional(),
+  status: z.enum(['PENDING', 'PUBLISHED', 'UNPUBLISHED']).optional(),
   moderationNote: z.string().optional(),
 });
 
