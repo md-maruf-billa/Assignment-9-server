@@ -7,6 +7,7 @@ import configs from '../../configs';
 import uploadCloud from '../../utils/cloudinary';
 import { IOptions, paginationHelper } from '../../utils/peginationHelper';
 import { Prisma } from '@prisma/client';
+import { userSearchTerm } from './user.constant';
 
 // get all users
 const getUsers = async (
@@ -20,14 +21,47 @@ const getUsers = async (
     const andConditions: Prisma.UserWhereInput[] = [];
 
     // Search Logic
+    if (searchTerm) {
+        andConditions.push({
+            OR: [
+                {
+                    name: {
+                        contains: searchTerm,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    bio: {
+                        contains: searchTerm,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    account: {
+                        email: {
+                            contains: searchTerm,
+                            mode: 'insensitive',
+                        },
+                    },
+                },
+            ],
+        });
+    }
 
 
 
+
+
+    andConditions.push({
+        isDeleted: false
+    })
+
+    const whereConditions: Prisma.UserWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
 
     const users = await prisma.user.findMany({
-        where: {
-            isDeleted: false
-        },
+        where: whereConditions,
+
+
         include: {
             account: {
                 select: {
