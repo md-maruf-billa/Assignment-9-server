@@ -36,6 +36,7 @@
   "scripts": {
     "postinstall": "prisma generate",
     "start": "node ./dist/server.js",
+    "nodemon": "nodemon ./src/server.ts",
     "vercel-build": "npm run build",
     "build": "tsc",
     "lint": "eslint \"src/**/*.ts\"",
