@@ -1,15 +1,22 @@
 import catchAsyncResponse from "../../utils/catchAsync"
 import manageResponse from "../../utils/manageRes";
+import pickQuery from "../../utils/pickQuery";
+import { companyFilterableFields, companyPaginationFields } from "./company.constant";
 import { company_services } from "./company.service"
 import httpStatus from 'http-status';
 
 const get_all_companies = catchAsyncResponse(async (req, res) => {
-    const result = await company_services.get_all_companies_from_db();
+
+    const filters = pickQuery(req.query, companyFilterableFields);
+    const options = pickQuery(req.query, companyPaginationFields);
+
+    const result = await company_services.get_all_companies_from_db(filters, options);
     manageResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "Companies data fetched successful.",
-        data: result
+        meta: result.meta,
+        data: result.data,
     })
 })
 
