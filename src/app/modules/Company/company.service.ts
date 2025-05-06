@@ -3,18 +3,85 @@ import { prisma } from "../../utils/Prisma"
 import httpStatus from 'http-status';
 import { Request } from "express";
 import uploadCloud from "../../utils/cloudinary";
+import { IOptions, paginationHelper } from "../../utils/peginationHelper";
+import { Prisma } from "@prisma/client";
+import { companySearchTerm } from "./company.constant";
 
-const get_all_companies_from_db = async () => {
+const get_all_companies_from_db = async (
+    filters: any,
+    options: IOptions
+) => {
+
+    const { searchTerm, ...filterData } = filters;
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options);
+
+    const andConditions: Prisma.CompanyWhereInput[] = [];
+
+    // Search Logic
+    if (searchTerm) {
+        andConditions.push({
+            OR: companySearchTerm.map(field => ({
+                [field]: {
+                    contains: searchTerm,
+                    mode: 'insensitive',
+                },
+            })),
+        });
+    };
+
+    // Filter Logic
+    if (filterData.name) {
+        andConditions.push({
+            name: {
+                contains: filterData.name,
+                mode: 'insensitive',
+            },
+        });
+    }
+
+    if (filterData.email) {
+        andConditions.push({
+            account: {
+                email: {
+                    contains: filterData.email,
+                    mode: 'insensitive',
+                },
+            },
+        });
+    }
+
+
+    andConditions.push({
+        isDeleted: false
+    });
+
+    const whereConditions: Prisma.CompanyWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
+
+
     const result = await prisma.company.findMany({
-        where: {
-            isDeleted: false
-        },
+        where: whereConditions,
+        skip,
+        take: limit,
+        orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
         include: {
             account: true,
             products: true
         }
-    })
-    return result;
+    });
+
+    const total = await prisma.company.count({
+        where: whereConditions,
+    });
+
+    return {
+        meta: {
+            page,
+            limit,
+            skip,
+            total,
+        },
+        data: result
+    };
 }
 
 const get_specific_company_from_db = async (id: string) => {
