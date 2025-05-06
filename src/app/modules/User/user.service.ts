@@ -96,7 +96,6 @@ const updateUser = async (
         const uploadedImage = await uploadCloud(req.file);
         req.body.profileImage = uploadedImage?.secure_url;
     };
-
     const updateuserInfo = await prisma.$transaction(async (tClient) => {
         const updateData = await tClient.user.update({
             where: {
