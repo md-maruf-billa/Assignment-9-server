@@ -2,24 +2,16 @@ import status from 'http-status';
 import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { reviewService } from './review.service';
-import pickQuery from '../../utils/pickQuery';
-import { reviewFilterableFields, reviewPaginationFields } from './review.constant';
 
 const getReview = catchAsyncResponse(async (req, res) => {
-
-  const filters = pickQuery(req.query, reviewFilterableFields);
-  const options = pickQuery(req.query, reviewPaginationFields);
-
-  const result = await reviewService.getReview(filters, options);
+  const result = await reviewService.getReview();
   manageResponse(res, {
     statusCode: status.OK,
     success: true,
     message: 'Reviews fetched successfully',
-    meta: result.meta,
-    data: result.result,
+    data: result,
   });
 });
-
 const getSingleReview = catchAsyncResponse(async (req, res) => {
   const result = await reviewService.getSingleReview(req.params.id);
   manageResponse(res, {
@@ -29,7 +21,6 @@ const getSingleReview = catchAsyncResponse(async (req, res) => {
     data: result,
   });
 });
-
 const getReviewByUserId = catchAsyncResponse(async (req, res) => {
   const result = await reviewService.getReviewByUserId(req.params.userId);
   manageResponse(res, {

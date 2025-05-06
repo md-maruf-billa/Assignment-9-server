@@ -5,80 +5,13 @@ import { Request } from 'express';
 import { verifyToken } from '../../utils/generateToken';
 import configs from '../../configs';
 import uploadCloud from '../../utils/cloudinary';
-import { IOptions, paginationHelper } from '../../utils/peginationHelper';
-import { Prisma } from '@prisma/client';
-import { userSearchTerm } from './user.constant';
 
 // get all users
-const getUsers = async (
-    filters: any,
-    options: IOptions
-) => {
-
-    const { searchTerm, ...filterData } = filters;
-    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options);
-
-    const andConditions: Prisma.UserWhereInput[] = [];
-
-    // Search Logic
-    if (searchTerm) {
-        andConditions.push({
-            OR: [
-                {
-                    name: {
-                        contains: searchTerm,
-                        mode: 'insensitive',
-                    },
-                },
-                {
-                    bio: {
-                        contains: searchTerm,
-                        mode: 'insensitive',
-                    },
-                },
-                {
-                    account: {
-                        email: {
-                            contains: searchTerm,
-                            mode: 'insensitive',
-                        },
-                    },
-                },
-            ],
-        });
-    }
-
-    // Filter Logic
-    if (filterData.name) {
-        andConditions.push({
-            name: {
-                contains: filterData.name,
-                mode: 'insensitive',
-            },
-        });
-    }
-    if (filterData.email) {
-        andConditions.push({
-            account: {
-                email: {
-                    contains: filterData.email,
-                    mode: 'insensitive'
-                }
-            }
-        })
-    }
-
-    andConditions.push({
-        isDeleted: false
-    })
-
-    const whereConditions: Prisma.UserWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
-
+const getUsers = async () => {
     const users = await prisma.user.findMany({
-        where: whereConditions,
-        skip,
-        take: limit,
-        orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
+        where: {
+            isDeleted: false
+        },
         include: {
             account: {
                 select: {
@@ -92,17 +25,14 @@ const getUsers = async (
             }
         }
     });
-    const total = await prisma.user.count({
-        where: whereConditions,
+    const count = await prisma.user.count({
+        where: {
+            isDeleted: false
+        }
     });
 
     return {
-        meta: {
-            page,
-            limit,
-            skip,
-            total
-        },
+        count,
         users
     };
 };

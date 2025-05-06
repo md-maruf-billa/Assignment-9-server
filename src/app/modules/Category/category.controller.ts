@@ -2,8 +2,6 @@ import status from 'http-status';
 import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { categoryService } from './category.service';
-import pickQuery from '../../utils/pickQuery';
-import { categoryFilterableFields, categoryPaginationFields } from './category.constant';
 
 const createCategory = catchAsyncResponse(async (req, res) => {
     const result = await categoryService.createCategory(req);
@@ -17,17 +15,12 @@ const createCategory = catchAsyncResponse(async (req, res) => {
 
 
 const getCategories = catchAsyncResponse(async (req, res) => {
-
-    const filters = pickQuery(req.query, categoryFilterableFields);
-    const options = pickQuery(req.query, categoryPaginationFields);
-
-    const result = await categoryService.getCategories(filters, options);
+    const result = await categoryService.getCategories();
     manageResponse(res, {
         statusCode: status.OK,
         success: true,
         message: 'Categories fetched successfully',
-        meta: result.meta,
-        data: result.data,
+        data: result,
     });
 });
 

@@ -3,24 +3,14 @@ import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { productService } from './product.service';
 import { Request } from 'express';
-import pickQuery from '../../utils/pickQuery';
-import {
-  productFilterableFields,
-  productPaginationFields
-} from './product.constant';
 
 const getProducts = catchAsyncResponse(async (req, res) => {
-
-  const filters = pickQuery(req.query, productFilterableFields);
-  const options = pickQuery(req.query, productPaginationFields);
-
-  const result = await productService.getProduct(filters, options);
+  const result = await productService.getProduct();
   manageResponse(res, {
     statusCode: status.OK,
     success: true,
     message: 'Products fetched successfully',
-    data: result.result,
-    meta: result.meta
+    data: result,
   });
 });
 

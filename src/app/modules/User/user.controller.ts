@@ -2,25 +2,18 @@ import status from "http-status";
 import catchAsyncResponse from "../../utils/catchAsync";
 import manageResponse from "../../utils/manageRes";
 import { userService } from "./user.service";
-import pickQuery from "../../utils/pickQuery";
-import { userFilterableFields, userPaginationFields } from "./user.constant";
 
 // get all users
 const getUsers = catchAsyncResponse(async (
     req,
     res
 ) => {
-
-    const filters = pickQuery(req.query, userFilterableFields);
-    const options = pickQuery(req.query, userPaginationFields);
-
-    const result = await userService.getUsers(filters, options);
+    const result = await userService.getUsers();
     manageResponse(res, {
         statusCode: status.OK,
         success: true,
         message: 'User retrieved successfully',
-        meta: result.meta,
-        data: result.users,
+        data: result,
     });
 });
 
