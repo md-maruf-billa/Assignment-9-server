@@ -8,6 +8,7 @@ import { EmailSender } from '../../utils/emailSender';
 import { AppError } from './../../utils/AppError';
 import { Role } from '@prisma/client';
 
+
 const register_user_into_db = async (payload: {
   name: string;
   email: string;
@@ -186,6 +187,7 @@ const change_password_from_db = async (
     newPassword: string;
   },
 ) => {
+  const today = new Date().toLocaleString();
   const isExistAccount = await prisma.account.findUnique({
     where: {
       email: user.email,
@@ -216,6 +218,17 @@ const change_password_from_db = async (
       password: hashedPassword,
     },
   });
+  await EmailSender(
+    isExistAccount.email,
+    "Your Password Changed !!",
+    `<div style="font-family: Arial, sans-serif;">
+      <h4>Password Change Notification</h4>
+      <p>Your password was changed on <strong>${today}</strong>.</p>
+      <p>If this wasn't you, please 
+        <a href="${configs.jwt.reset_base_link}" style="color: #1a73e8;">reset your password</a> immediately.
+      </p>
+    </div>`
+  )
 
   return 'Password update is successful.';
 };
@@ -262,7 +275,7 @@ const reset_password_into_db = async (
       configs.jwt.reset_secret as Secret,
     );
   } catch (err) {
-    throw new AppError('Invalid or expired token', httpStatus.UNAUTHORIZED);
+    throw new AppError('Your reset link is expire. Submit new link request!!', httpStatus.UNAUTHORIZED);
   }
 
   const isAccountExists = await prisma.account.findUnique({
