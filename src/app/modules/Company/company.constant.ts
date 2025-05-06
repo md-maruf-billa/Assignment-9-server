@@ -2,13 +2,12 @@
 export const companySearchTerm: string[] = [
     'name',
     'description',
-    // 'account'
 ];
 
 export const companyFilterableFields: string[] = [
     'searchTerm',
     'name',
-    'account'
+    'email'
 ];
 
 export const companyPaginationFields: string[] = [

@@ -29,6 +29,28 @@ const get_all_companies_from_db = async (
         });
     };
 
+    // Filter Logic
+    if (filterData.name) {
+        andConditions.push({
+            name: {
+                contains: filterData.name,
+                mode: 'insensitive',
+            },
+        });
+    }
+
+    if (filterData.email) {
+        andConditions.push({
+            account: {
+                email: {
+                    contains: filterData.email,
+                    mode: 'insensitive',
+                },
+            },
+        });
+    }
+
+
     andConditions.push({
         isDeleted: false
     });
@@ -40,6 +62,7 @@ const get_all_companies_from_db = async (
         where: whereConditions,
         skip,
         take: limit,
+        orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
         include: {
             account: true,
             products: true
