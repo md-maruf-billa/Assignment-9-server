@@ -48,9 +48,25 @@ const getUsers = async (
         });
     }
 
-
-
-
+    // Filter Logic
+    if (filterData.name) {
+        andConditions.push({
+            name: {
+                contains: filterData.name,
+                mode: 'insensitive',
+            },
+        });
+    }
+    if (filterData.email) {
+        andConditions.push({
+            account: {
+                email: {
+                    contains: filterData.email,
+                    mode: 'insensitive'
+                }
+            }
+        })
+    }
 
     andConditions.push({
         isDeleted: false
@@ -60,8 +76,9 @@ const getUsers = async (
 
     const users = await prisma.user.findMany({
         where: whereConditions,
-
-
+        skip,
+        take: limit,
+        orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
         include: {
             account: {
                 select: {
@@ -76,9 +93,7 @@ const getUsers = async (
         }
     });
     const total = await prisma.user.count({
-        where: {
-            isDeleted: false
-        }
+        where: whereConditions,
     });
 
     return {
