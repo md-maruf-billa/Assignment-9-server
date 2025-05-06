@@ -5,9 +5,25 @@ import { Request } from 'express';
 import { verifyToken } from '../../utils/generateToken';
 import configs from '../../configs';
 import uploadCloud from '../../utils/cloudinary';
+import { IOptions, paginationHelper } from '../../utils/peginationHelper';
+import { Prisma } from '@prisma/client';
 
 // get all users
-const getUsers = async () => {
+const getUsers = async (
+    filters: any,
+    options: IOptions
+) => {
+
+    const { searchTerm, ...filterData } = filters;
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options);
+
+    const andConditions: Prisma.UserWhereInput[] = [];
+
+    // Search Logic
+
+
+
+
     const users = await prisma.user.findMany({
         where: {
             isDeleted: false
@@ -25,14 +41,19 @@ const getUsers = async () => {
             }
         }
     });
-    const count = await prisma.user.count({
+    const total = await prisma.user.count({
         where: {
             isDeleted: false
         }
     });
 
     return {
-        count,
+        meta: {
+            page,
+            limit,
+            skip,
+            total
+        },
         users
     };
 };
