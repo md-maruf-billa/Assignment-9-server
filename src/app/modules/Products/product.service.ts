@@ -4,10 +4,43 @@ import { AppError } from '../../utils/AppError';
 import httpStatus from 'http-status';
 import { Request } from 'express';
 import uploadCloud from '../../utils/cloudinary';
+import { IOptions, paginationHelper } from '../../utils/peginationHelper';
 
-const getProduct = async () => {
-  const result = await prisma.product.findMany();
-  return result;
+const getProduct = async (
+  filters: any,
+  options: IOptions
+) => {
+
+  const { searchTerm, ...filterData } = filters;
+  const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options);
+
+  const result = await prisma.product.findMany({
+    where: {
+      isDeleted: false,
+    },
+    skip,
+    take: limit,
+    orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
+    include: {
+      company: true,
+    },
+  });
+
+  const total = await prisma.product.count({
+    where: {
+      isDeleted: false,
+    },
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      skip,
+      total
+    },
+    result
+  };
 };
 
 const getSingleProduct = async (id: string) => {

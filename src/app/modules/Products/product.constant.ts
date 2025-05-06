@@ -1,16 +1,15 @@
 
 export const productSearchTerm: string[] = [
-    'title',
+    'name',
     'description',
-    'category',
+    'company',
 ];
 
 export const productFilterableFields: string[] = [
     'searchTerm',
-    'title',
-    'rating',
-    'category',
-    'createdAt'
+    'name',
+    'company',
+    'price',
 ];
 
 export const productPaginationFields: string[] = [
