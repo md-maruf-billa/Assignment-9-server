@@ -25,10 +25,11 @@ enum ReviewStatus {
 }
 
 model Category {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   categoryImage String
-  name          String   @unique
+  name          String    @unique
   reviews       Review[]
+  Product       Product[]
 }
 
 model Account {
@@ -107,6 +108,8 @@ model Product {
   reviews     Review[]
   companyId   String?
   company     Company? @relation(fields: [companyId], references: [id])
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
 
   @@map("products")
 }
