@@ -9,7 +9,6 @@ const createReview = z.object({
   purchaseSource: z.string().optional(),
   images: z.array(z.string().url('Invalid image URL')).optional(),
   isPremium: z.boolean().optional(),
-
   status: z.enum(['PENDING', 'PUBLISHED', 'UNPUBLISHED']).optional(),
   moderationNote: z.string().optional(),
 });
