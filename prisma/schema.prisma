@@ -49,6 +49,7 @@ model Account {
   reviews           Review[]
   votes             Vote[]
   ReviewComment     ReviewComment[]
+  Payment           Payment[]
 
   @@map("accounts")
 }
@@ -167,6 +168,20 @@ model ReviewComment {
   isDeleted Boolean  @default(false)
 
   @@map("review_comments")
+}
+
+model Payment {
+  id        String  @id @default(uuid())
+  accountId String
+  account   Account @relation(fields: [accountId], references: [id])
+
+  amount    Float
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  @@map("payments")
 }
 
 enum VoteType {
