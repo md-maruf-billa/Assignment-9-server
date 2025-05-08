@@ -28,7 +28,7 @@ const validatePayment = catchAsyncResponse(async (req, res) => {
 
 
 const getAllPayment = catchAsyncResponse(async (req, res) => {
-    const result = await paymentService.getAllPayment(req.query);
+    const result = await paymentService.getAllPayment();
     manageResponse(res, {
         statusCode: status.OK,
         success: true,

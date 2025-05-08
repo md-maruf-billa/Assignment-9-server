@@ -2,17 +2,32 @@ import { Request } from "express";
 import { prisma } from "../../utils/Prisma";
 import { SSLService } from "../SSL/ssl.service";
 import { PaymentStatus } from "@prisma/client";
+import { AppError } from "../../utils/AppError";
+import status from "http-status";
 
 const initPayment = async (req: Request) => {
 
-    const userAccount = await prisma.account.findUniqueOrThrow({
+    const userAccount = await prisma.account.findUnique({
         where: {
-            email: req.user.email
+            email: req.user.email,
         },
         include: {
             user: true,
         }
     });
+
+    if (!userAccount) {
+        throw new AppError(
+            'User not found',
+            status.BAD_REQUEST
+        );
+    }
+    if (userAccount.isPremium) {
+        throw new AppError(
+            'User is already premium',
+            status.BAD_REQUEST
+        );
+    }
 
     const transactionId = `premium-${Date.now()}`;
     await prisma.payment.create({
@@ -42,6 +57,10 @@ const initPayment = async (req: Request) => {
 }
 
 const validatePayment = async (payload: any) => {
+
+    if (!payload?.tran_id) {
+        throw new AppError('Missing transaction ID', status.BAD_REQUEST);
+    }
 
     //! this part for production purpose only
 
@@ -87,12 +106,15 @@ const validatePayment = async (payload: any) => {
 };
 
 
-const getAllPayment = async (payload: any) => {
+const getAllPayment = async () => {
     const payments = await prisma.payment.findMany({
         include: {
             account: {
-                omit: {
-                    password: true
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    isPremium: true,
                 }
             },
         }

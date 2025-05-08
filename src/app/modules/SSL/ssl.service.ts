@@ -10,7 +10,7 @@ const initPayment = async (paymentData: IPaymentData) => {
             store_id: configs.ssl.storeId,
             store_passwd: configs.ssl.storePass,
             total_amount: paymentData.amount,
-            currency: 'USD',
+            currency: 'BDT',
             tran_id: paymentData.transactionId,
             success_url: configs.ssl.successUrl,
             fail_url: configs.ssl.failUrl,
