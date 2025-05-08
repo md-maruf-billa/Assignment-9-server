@@ -10,8 +10,8 @@ const initPayment = async (paymentData: IPaymentData) => {
             store_id: configs.ssl.storeId,
             store_passwd: configs.ssl.storePass,
             total_amount: paymentData.amount,
-            currency: 'BDT',
-            tran_id: paymentData.transactionId, // use unique tran_id for each api call
+            currency: 'USD',
+            tran_id: paymentData.transactionId,
             success_url: configs.ssl.successUrl,
             fail_url: configs.ssl.failUrl,
             cancel_url: configs.ssl.cancelUrl,
