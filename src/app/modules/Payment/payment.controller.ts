@@ -8,7 +8,7 @@ import { paymentService } from "./payment.service";
 const initiatePayment = catchAsyncResponse(async (req, res) => {
     const result = await paymentService.initPayment(req);
     manageResponse(res, {
-        statusCode: status.OK,
+        statusCode: status.CREATED,
         success: true,
         message: "Payment initate successfully!",
         data: result,
@@ -27,7 +27,19 @@ const validatePayment = catchAsyncResponse(async (req, res) => {
 });
 
 
+const getAllPayment = catchAsyncResponse(async (req, res) => {
+    const result = await paymentService.getAllPayment(req.query);
+    manageResponse(res, {
+        statusCode: status.OK,
+        success: true,
+        message: "Payments fetched successfully!",
+        data: result,
+    })
+});
+
+
 export const paymentController = {
     initiatePayment,
-    validatePayment
+    validatePayment,
+    getAllPayment
 };

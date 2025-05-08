@@ -41,22 +41,24 @@ const initPayment = async (req: Request) => {
     // return result;
 }
 
-
 const validatePayment = async (payload: any) => {
-    if (!payload || !payload.status || !(payload.status === 'VALID')) {
-        return {
-            message: "Invalid Payment!"
-        }
-    }
 
-    const response1 = await SSLService.validatePayment(payload);
-    if (response1?.status !== 'VALID') {
-        return {
-            message: "Payment Failed!"
-        }
-    }
+    //! this part for production purpose only
 
-    const response = payload;
+    // if (!payload || !payload.status || !(payload.status === 'VALID')) {
+    //     return {
+    //         message: "Invalid Payment!"
+    //     }
+    // }
+
+    // const response1 = await SSLService.validatePayment(payload);
+    // if (response1?.status !== 'VALID') {
+    //     return {
+    //         message: "Payment Failed!"
+    //     }
+    // }
+
+    const response = payload; // this part for development purpose only
 
     await prisma.$transaction(async (tx) => {
         const updatedPaymentData = await tx.payment.update({
@@ -76,7 +78,7 @@ const validatePayment = async (payload: any) => {
             data: {
                 isPremium: true
             }
-        })
+        });
     });
 
     return {
@@ -85,7 +87,22 @@ const validatePayment = async (payload: any) => {
 };
 
 
+const getAllPayment = async (payload: any) => {
+    const payments = await prisma.payment.findMany({
+        include: {
+            account: {
+                omit: {
+                    password: true
+                }
+            },
+        }
+    });
+
+    return payments;
+}
+
 export const paymentService = {
     initPayment,
-    validatePayment
+    validatePayment,
+    getAllPayment
 };

@@ -5,6 +5,10 @@ import auth from "../../middlewares/auth";
 
 const router = Router();
 
+router.get(
+    '/',
+    paymentController.getAllPayment
+);
 
 router.get(
     '/ipn',
