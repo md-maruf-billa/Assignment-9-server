@@ -43,9 +43,6 @@ const getReviewByUserId = catchAsyncResponse(async (req, res) => {
 });
 
 const createReview = catchAsyncResponse(async (req, res) => {
-  // const { accountId } = req?.query;
-  // console.log(accountId);
-  // console.log(userId);
   const userEmail = req?.user?.email;
   const result = await reviewService.createReview(
     req.body,
