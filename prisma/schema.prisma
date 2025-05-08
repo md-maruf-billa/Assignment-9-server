@@ -43,13 +43,14 @@ model Account {
   status            AccountStatus   @default(ACTIVE)
   isDeleted         Boolean         @default(false)
   isCompleteProfile Boolean         @default(false)
+  isPremium         Boolean         @default(false)
   user              User?
   company           Company?
   admin             Admin?
   reviews           Review[]
   votes             Vote[]
   ReviewComment     ReviewComment[]
-  Payment           Payment[]
+  payment           Payment?
 
   @@map("accounts")
 }
@@ -172,14 +173,16 @@ model ReviewComment {
 
 model Payment {
   id        String  @id @default(uuid())
-  accountId String
+  accountId String  @unique
   account   Account @relation(fields: [accountId], references: [id])
 
-  amount    Float
-  status    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
+  transactionId      String        @unique
+  amount             Float
+  status             PaymentStatus @default(UNPAID)
+  paymentGatewayData Json?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  isDeleted          Boolean       @default(false)
 
   @@map("payments")
 }
@@ -187,4 +190,9 @@ model Payment {
 enum VoteType {
   UPVOTE
   DOWNVOTE
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
 }
