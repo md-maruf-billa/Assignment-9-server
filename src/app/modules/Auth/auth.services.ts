@@ -70,6 +70,16 @@ const register_user_into_db = async (payload: {
         admin: true,
       },
     });
+    EmailSender(
+      createdAccount.email,
+      "Welcome to ReviewHub – Account Successfully Created",
+      `
+        <p>Hi there,</p>
+    
+        <p>Thank you for signing up! Your account has been successfully created and you're now ready to explore all that ReviewHub has to offer.</p>
+      `
+    )
+
     return finalUser;
   });
   return result;
@@ -119,6 +129,9 @@ const login_user_from_db = async (payload: {
     configs.jwt.refresh_secret as Secret,
     configs.jwt.refresh_expires as string,
   );
+  EmailSender(isUserExists.email, "Successfully login !!!", `<p>You are successfully login your account. If this wasn't you, please 
+        <a href="${configs.jwt.reset_base_link}" style="color: #1a73e8;">reset your password</a> immediately.
+    </p>`)
   return {
     accessToken: accessToken,
     refreshToken: refreshToken,
@@ -302,7 +315,7 @@ const reset_password_into_db = async (
       password: hashedPassword,
     },
   });
-
+  EmailSender(isAccountExists.email, "Password Reset Successful.", `<p>Your password is successfully reset now you can login with using your password</p>`)
   return 'Password reset successfully!';
 };
 

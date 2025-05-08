@@ -34,6 +34,7 @@ const getSingleProduct = catchAsyncResponse(async (req, res) => {
 });
 
 const createProduct = catchAsyncResponse(async (req, res) => {
+  console.log(req.body?.data)
   const result = await productService.createProduct(req as Request);
   manageResponse(res, {
     statusCode: status.CREATED,
@@ -43,7 +44,7 @@ const createProduct = catchAsyncResponse(async (req, res) => {
   });
 });
 const updateProduct = catchAsyncResponse(async (req, res) => {
-  const { productId } = req?.query;
+  const { productId } = req?.params;
   const result = await productService.updateProduct(
     productId as string,
     req as Request,
@@ -58,7 +59,7 @@ const updateProduct = catchAsyncResponse(async (req, res) => {
   });
 });
 const softDeleteProduct = catchAsyncResponse(async (req, res) => {
-  const { productId } = req?.query;
+  const { productId } = req?.params;
   const result = await productService.softDeleteProduct(productId as string);
   manageResponse(res, {
     statusCode: status.OK,

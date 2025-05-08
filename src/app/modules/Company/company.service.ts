@@ -91,13 +91,10 @@ const get_specific_company_from_db = async (id: string) => {
     }
     return result;
 }
-const update_company_info_into_db = async (id: string, req: Request) => {
+const update_company_info_into_db = async (req: Request) => {
     // find first account
-    const isAccountExist = await prisma.account.findUnique({ where: { email: req?.user?.email }, include: { company: true } })
-    if (!isAccountExist || isAccountExist.company?.id !== id) {
-        throw new AppError("You are not authorized !!", httpStatus.UNAUTHORIZED)
-    }
-    const isExistCompany = await prisma.company.findUnique({ where: { id } })
+    const isAccountExist = await prisma.account.findUnique({ where: { email: req?.user?.email, status: "ACTIVE", isDeleted: false }, include: { company: true } })
+    const isExistCompany = await prisma.company.findUnique({ where: { accountId: isAccountExist?.id } })
     if (!isExistCompany) {
         throw new AppError("Company info not found!!", httpStatus.NOT_FOUND)
     }

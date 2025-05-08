@@ -121,7 +121,7 @@ const createProduct = async (req: Request) => {
     req.body.imageUrl = uploadedImage?.secure_url;
   }
   req.body.companyId = isAccountExist?.company?.id;
-
+  console.log(req?.body)
   const result = await prisma.product.create({
     data: req.body,
   });
