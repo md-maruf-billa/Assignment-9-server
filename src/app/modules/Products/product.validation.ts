@@ -11,6 +11,7 @@ const createProduct = z.object({
     .string()
     .uuid({ message: 'Invalid company ID format' })
     .optional(),
+  categoryId: z.string().uuid()
 });
 
 const uploadProduct2 = z.object({
