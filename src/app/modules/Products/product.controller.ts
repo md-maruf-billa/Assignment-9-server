@@ -47,6 +47,7 @@ const updateProduct = catchAsyncResponse(async (req, res) => {
   const result = await productService.updateProduct(
     productId as string,
     req as Request,
+
   );
 
   manageResponse(res, {
