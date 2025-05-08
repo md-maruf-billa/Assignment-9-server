@@ -173,3 +173,19 @@ enum VoteType {
   UPVOTE
   DOWNVOTE
 }
+
+model Team {
+  id           String   @id @default(uuid())
+  name         String
+  title        String
+  profileImage String? // optional field
+  description  String
+  gitHub       String
+  linkedIn     String
+  facebook     String
+  portfolio    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("teams")
+}
