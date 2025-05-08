@@ -3,10 +3,12 @@ import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
 import { reviewService } from './review.service';
 import pickQuery from '../../utils/pickQuery';
-import { reviewFilterableFields, reviewPaginationFields } from './review.constant';
+import {
+  reviewFilterableFields,
+  reviewPaginationFields,
+} from './review.constant';
 
 const getReview = catchAsyncResponse(async (req, res) => {
-
   const filters = pickQuery(req.query, reviewFilterableFields);
   const options = pickQuery(req.query, reviewPaginationFields);
 
@@ -41,9 +43,11 @@ const getReviewByUserId = catchAsyncResponse(async (req, res) => {
 });
 
 const createReview = catchAsyncResponse(async (req, res) => {
-  const { userId } = req?.query;
-  console.log(userId);
-  const result = await reviewService.createReview(req.body, userId as string);
+  const userEmail = req?.user?.email;
+  const result = await reviewService.createReview(
+    req.body,
+    userEmail as string,
+  );
   manageResponse(res, {
     statusCode: status.CREATED,
     success: true,
@@ -77,6 +81,16 @@ const deleteReview = catchAsyncResponse(async (req, res) => {
     data: null,
   });
 });
+
+const getAllPremiumReview = catchAsyncResponse(async (req, res) => {
+  const result = await reviewService.getAllPremiumReview();
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'All premium reviews fetched successfully',
+    data: result,
+  });
+});
 export const reviewController = {
   createReview,
   updateReview,
@@ -84,4 +98,5 @@ export const reviewController = {
   getReview,
   getSingleReview,
   getReviewByUserId,
+  getAllPremiumReview,
 };

@@ -11,22 +11,25 @@ router.get('/', productController.getProducts);
 router.get('/:id', productController.getSingleProduct);
 router.post(
   '/create-product',
-  auth("COMPANY"),
-  uploader.single("image"),
+  auth('COMPANY', 'ADMIN'),
+  uploader.single('image'),
   (req: Request, res: Response, next: NextFunction) => {
-    req.body = ProductValidation.createProduct.parse(JSON.parse(req.body.data))
-    productController.createProduct(req, res, next)
-  }
-)
+    req.body = ProductValidation.createProduct.parse(JSON.parse(req.body.data));
+    productController.createProduct(req, res, next);
+  },
+);
 router.patch(
   '/update-product',
-  auth("COMPANY"),
-  RequestValidator(ProductValidation.updateProduct),
-  productController.updateProduct,
+  uploader.single('image'),
+  auth('COMPANY', 'ADMIN'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = ProductValidation.updateProduct.parse(JSON.parse(req.body.data));
+    productController.updateProduct(req, res, next);
+  },
 );
 router.delete(
   '/delete-product',
-  auth("COMPANY"),
+  auth('COMPANY', 'ADMIN'),
   productController.softDeleteProduct,
 );
 export const productRouters = router;

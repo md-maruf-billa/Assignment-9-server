@@ -66,12 +66,12 @@ const change_password = catchAsyncResponse(async (req, res) => {
 });
 
 const forget_password = catchAsyncResponse(async (req, res) => {
-  await AuthService.forget_password_from_db(req.body);
-
+  const { email } = req?.body
+  await AuthService.forget_password_from_db(email);
   manageResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Check your email!',
+    message: 'Reset password link sent to your email!',
     data: null,
   });
 });

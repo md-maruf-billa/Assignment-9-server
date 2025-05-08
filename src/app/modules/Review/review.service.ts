@@ -5,19 +5,10 @@ import status from 'http-status';
 import { IOptions, paginationHelper } from '../../utils/peginationHelper';
 import { reviewSearchTerm } from './review.constant';
 
-const getReview = async (
-  filters: any,
-  options: IOptions
-) => {
-
+const getReview = async (filters: any, options: IOptions) => {
   const { searchTerm, ...filterData } = filters;
-  const {
-    limit,
-    page,
-    skip,
-    sortBy,
-    sortOrder
-  } = paginationHelper.calculatePagination(options);
+  const { limit, page, skip, sortBy, sortOrder } =
+    paginationHelper.calculatePagination(options);
 
   const andConditions: Prisma.ReviewWhereInput[] = [];
 
@@ -47,7 +38,6 @@ const getReview = async (
       ],
     });
   }
-
 
   // if (Object.keys(filterData).length > 0) {
   //     andConditions.push({
@@ -95,27 +85,26 @@ const getReview = async (
     });
   }
 
-
-
   andConditions.push({
-    isDeleted: false
+    isDeleted: false,
   });
 
-  const whereConditions: Prisma.ReviewWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
-
+  const whereConditions: Prisma.ReviewWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
 
   const result = await prisma.review.findMany({
     where: whereConditions,
     skip,
     take: limit,
-    orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
+    orderBy:
+      sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
     include: {
       category: {
         select: {
-          name: true
-        }
-      }
-    }
+          name: true,
+        },
+      },
+    },
   });
 
   const total = await prisma.review.count({
@@ -127,13 +116,11 @@ const getReview = async (
       page,
       limit,
       skip,
-      total
+      total,
     },
-    result
+    result,
   };
 };
-
-
 
 const getSingleReview = async (id: string) => {
   const isExistReview = await prisma.review.findUnique({
@@ -155,12 +142,14 @@ const getReviewByUserId = async (id: string) => {
   return result;
 };
 
-const createReview = async (reviewData: Review, userId: string) => {
+const createReview = async (reviewData: Review, userEmail: string) => {
   const isProfileUpdate = await prisma.account.findUnique({
-    where: { id: userId },
+    where: { email: userEmail },
   });
+
+  // return isProfileUpdate;
   if (!isProfileUpdate) {
-    throw new AppError('User not found !!', status.NOT_FOUND);
+    throw new AppError('Account not found !!', status.NOT_FOUND);
   }
   if (isProfileUpdate.isCompleteProfile === false) {
     throw new AppError(
@@ -169,7 +158,7 @@ const createReview = async (reviewData: Review, userId: string) => {
     );
   }
   const result = await prisma.review.create({
-    data: reviewData,
+    data: { ...reviewData, accountId: isProfileUpdate.id },
   });
   return result;
 };
@@ -211,6 +200,16 @@ const deleteReview = async (reviewId: string, userId: string) => {
   return result;
 };
 
+const getAllPremiumReview = async () => {
+  const result = await prisma.review.findMany({
+    where: { isDeleted: false, isPremium: true },
+  });
+  if (!result) {
+    throw new AppError('No premium reviews found', status.NOT_FOUND);
+  }
+  return result;
+};
+
 export const reviewService = {
   createReview,
   updateReview,
@@ -218,4 +217,5 @@ export const reviewService = {
   getReview,
   getSingleReview,
   getReviewByUserId,
+  getAllPremiumReview,
 };
