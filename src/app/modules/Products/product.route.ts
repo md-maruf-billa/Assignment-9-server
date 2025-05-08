@@ -20,9 +20,12 @@ router.post(
 );
 router.patch(
   '/update-product',
+  uploader.single('image'),
   auth('COMPANY', 'ADMIN'),
-  RequestValidator(ProductValidation.updateProduct),
-  productController.updateProduct,
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = ProductValidation.updateProduct.parse(JSON.parse(req.body.data));
+    productController.updateProduct(req, res, next);
+  },
 );
 router.delete(
   '/delete-product',

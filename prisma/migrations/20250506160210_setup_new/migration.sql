@@ -5,7 +5,10 @@ CREATE TYPE "Role" AS ENUM ('USER', 'COMPANY', 'ADMIN');
 CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'SUSPENDED');
 
 -- CreateEnum
-CREATE TYPE "ReviewStatus" AS ENUM ('PENDING', 'APPROVED');
+CREATE TYPE "ReviewStatus" AS ENUM ('PENDING', 'PUBLISHED', 'UNPUBLISHED');
+
+-- CreateEnum
+CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
 
 -- CreateTable
 CREATE TABLE "Category" (
@@ -85,6 +88,7 @@ CREATE TABLE "products" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "companyId" TEXT,
+    "categoryId" TEXT NOT NULL,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -114,9 +118,11 @@ CREATE TABLE "reviews" (
 CREATE TABLE "votes" (
     "id" TEXT NOT NULL,
     "reviewId" TEXT NOT NULL,
-    "accountId" TEXT NOT NULL,
+    "accountEmail" TEXT NOT NULL,
+    "type" "VoteType" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "votes_pkey" PRIMARY KEY ("id")
 );
@@ -149,6 +155,9 @@ CREATE UNIQUE INDEX "companies_accountId_key" ON "companies"("accountId");
 -- CreateIndex
 CREATE UNIQUE INDEX "admins_accountId_key" ON "admins"("accountId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "votes_reviewId_accountEmail_key" ON "votes"("reviewId", "accountEmail");
+
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -160,6 +169,9 @@ ALTER TABLE "admins" ADD CONSTRAINT "admins_accountId_fkey" FOREIGN KEY ("accoun
 
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "products" ADD CONSTRAINT "products_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -174,7 +186,7 @@ ALTER TABLE "reviews" ADD CONSTRAINT "reviews_accountId_fkey" FOREIGN KEY ("acco
 ALTER TABLE "votes" ADD CONSTRAINT "votes_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "reviews"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "votes" ADD CONSTRAINT "votes_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "votes" ADD CONSTRAINT "votes_accountEmail_fkey" FOREIGN KEY ("accountEmail") REFERENCES "accounts"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "review_comments" ADD CONSTRAINT "review_comments_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -6,11 +6,10 @@ import { Request } from 'express';
 import pickQuery from '../../utils/pickQuery';
 import {
   productFilterableFields,
-  productPaginationFields
+  productPaginationFields,
 } from './product.constant';
 
 const getProducts = catchAsyncResponse(async (req, res) => {
-
   const filters = pickQuery(req.query, productFilterableFields);
   const options = pickQuery(req.query, productPaginationFields);
 
@@ -20,7 +19,7 @@ const getProducts = catchAsyncResponse(async (req, res) => {
     success: true,
     message: 'Products fetched successfully',
     data: result.result,
-    meta: result.meta
+    meta: result.meta,
   });
 });
 
@@ -47,8 +46,10 @@ const updateProduct = catchAsyncResponse(async (req, res) => {
   const { productId } = req?.query;
   const result = await productService.updateProduct(
     productId as string,
-    req.body,
+    req as Request,
+
   );
+
   manageResponse(res, {
     statusCode: status.OK,
     success: true,
