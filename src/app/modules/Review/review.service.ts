@@ -105,6 +105,7 @@ const getReview = async (filters: any, options: IOptions) => {
         },
       },
       product: true,
+
     },
   });
 
@@ -143,6 +144,7 @@ const getReviewByUserId = async (id: string) => {
   return result;
 };
 
+
 const createReview = async (reviewData: Review, email: string) => {
   const isProfileUpdate = await prisma.account.findUnique({
     where: { email },
@@ -150,6 +152,7 @@ const createReview = async (reviewData: Review, email: string) => {
       user: true,
       admin: true
     }
+
   });
 
   // return isProfileUpdate;
@@ -173,6 +176,7 @@ const createReview = async (reviewData: Review, email: string) => {
   }
   const result = await prisma.review.create({
     data: { ...reviewData, ...userData },
+
   });
   return result;
 };
