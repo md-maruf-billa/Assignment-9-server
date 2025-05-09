@@ -104,6 +104,7 @@ const getReview = async (filters: any, options: IOptions) => {
           name: true,
         },
       },
+      product: true,
     },
   });
 

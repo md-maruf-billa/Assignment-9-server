@@ -5,9 +5,6 @@ CREATE TYPE "Role" AS ENUM ('USER', 'COMPANY', 'ADMIN');
 CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'SUSPENDED');
 
 -- CreateEnum
-CREATE TYPE "ReviewStatus" AS ENUM ('PENDING', 'PUBLISHED', 'UNPUBLISHED');
-
--- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
 
 -- CreateEnum
@@ -105,15 +102,14 @@ CREATE TABLE "reviews" (
     "rating" INTEGER NOT NULL,
     "categoryId" TEXT NOT NULL,
     "productId" TEXT,
-    "purchaseSource" TEXT,
-    "images" TEXT[],
     "isPremium" BOOLEAN NOT NULL DEFAULT false,
-    "accountId" TEXT NOT NULL,
-    "status" "ReviewStatus" NOT NULL DEFAULT 'PENDING',
-    "moderationNote" TEXT,
+    "reviewerName" TEXT,
+    "reviewerEmail" TEXT,
+    "reviewerProfilePhoto" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "accountId" TEXT,
 
     CONSTRAINT "reviews_pkey" PRIMARY KEY ("id")
 );
@@ -157,6 +153,23 @@ CREATE TABLE "payments" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "teams" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "profileImage" TEXT,
+    "description" TEXT NOT NULL,
+    "gitHub" TEXT NOT NULL,
+    "linkedIn" TEXT NOT NULL,
+    "facebook" TEXT NOT NULL,
+    "portfolio" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "teams_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -205,7 +218,7 @@ ALTER TABLE "reviews" ADD CONSTRAINT "reviews_categoryId_fkey" FOREIGN KEY ("cat
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "reviews" ADD CONSTRAINT "reviews_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "votes" ADD CONSTRAINT "votes_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "reviews"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
