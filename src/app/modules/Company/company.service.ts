@@ -84,20 +84,72 @@ const get_all_companies_from_db = async (
     };
 }
 
+// const get_specific_company_from_db = async (id: string) => {
+//     const result = await prisma.company.findUnique({
+//         where: { id, isDeleted: false }, include: {
+//             account: true, products: {
+//                 include: {
+//                     reviews: true
+//                 }
+//             }
+//         }
+//     })
+//     if (!result) {
+//         throw new AppError("Company not found !", httpStatus.NOT_FOUND)
+//     }
+//     return result;
+// }
+
+
 const get_specific_company_from_db = async (id: string) => {
-    const result = await prisma.company.findUnique({ where: { id, isDeleted: false }, include: { account: true, products: true } })
+    const result = await prisma.company.findUnique({
+        where: { id, isDeleted: false },
+        include: {
+            account: true,
+            products: {
+                include: {
+                    category: true, // <-- Include category info
+                    reviews: true
+                }
+            }
+        }
+    });
+
     if (!result) {
-        throw new AppError("Company not found !", httpStatus.NOT_FOUND)
+        throw new AppError("Company not found!", httpStatus.NOT_FOUND);
     }
-    return result;
-}
-const update_company_info_into_db = async (id: string, req: Request) => {
+
+    // Enrich each review with product + category details
+    const allReviews = result.products.flatMap(product => {
+        return product.reviews
+            .filter(review => !review.isDeleted)
+            .map(review => ({
+                ...review,
+                productId: product.id,
+                productName: product.name,
+                categoryId: product.categoryId,
+                categoryName: product.category?.name || null
+            }));
+    });
+
+    // Remove `reviews` and `category` from each product to avoid duplication
+    const productsWithoutReviews = result.products.map(product => {
+        const { reviews, category, ...rest } = product;
+        return rest;
+    });
+
+    return {
+        ...result,
+        products: productsWithoutReviews,
+        reviews: allReviews
+    };
+};
+
+
+const update_company_info_into_db = async (req: Request) => {
     // find first account
-    const isAccountExist = await prisma.account.findUnique({ where: { email: req?.user?.email }, include: { company: true } })
-    if (!isAccountExist || isAccountExist.company?.id !== id) {
-        throw new AppError("You are not authorized !!", httpStatus.UNAUTHORIZED)
-    }
-    const isExistCompany = await prisma.company.findUnique({ where: { id } })
+    const isAccountExist = await prisma.account.findUnique({ where: { email: req?.user?.email, status: "ACTIVE", isDeleted: false }, include: { company: true } })
+    const isExistCompany = await prisma.company.findUnique({ where: { accountId: isAccountExist?.id } })
     if (!isExistCompany) {
         throw new AppError("Company info not found!!", httpStatus.NOT_FOUND)
     }
