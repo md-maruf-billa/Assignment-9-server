@@ -84,22 +84,6 @@ const get_all_companies_from_db = async (
     };
 }
 
-// const get_specific_company_from_db = async (id: string) => {
-//     const result = await prisma.company.findUnique({
-//         where: { id, isDeleted: false }, include: {
-//             account: true, products: {
-//                 include: {
-//                     reviews: true
-//                 }
-//             }
-//         }
-//     })
-//     if (!result) {
-//         throw new AppError("Company not found !", httpStatus.NOT_FOUND)
-//     }
-//     return result;
-// }
-
 
 const get_specific_company_from_db = async (id: string) => {
     const result = await prisma.company.findUnique({
@@ -108,8 +92,22 @@ const get_specific_company_from_db = async (id: string) => {
             account: true,
             products: {
                 include: {
-                    category: true, // <-- Include category info
-                    reviews: true
+                    category: true,
+                    reviews: {
+                        include: {
+                            ReviewComment: {
+                                include: {
+                                    account: {
+                                        include: {
+                                            user: true,
+                                            admin: true
+                                        }
+                                    }
+                                }
+                            },
+                            votes: true
+                        }
+                    }
                 }
             }
         }

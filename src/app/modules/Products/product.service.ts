@@ -98,7 +98,21 @@ const getSingleProduct = async (id: string) => {
   const result = await prisma.product.findUnique({
     where: { id: id, isDeleted: false },
     include: {
-      reviews: true
+      reviews: {
+        include: {
+          ReviewComment: {
+            include: {
+              account: {
+                include: {
+                  user: true,
+                  admin: true,
+                }
+              }
+            }
+          },
+          votes: true
+        }
+      }
     }
   });
   if (!result) {
