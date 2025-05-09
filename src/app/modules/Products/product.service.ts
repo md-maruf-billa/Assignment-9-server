@@ -97,6 +97,9 @@ const getProduct = async (filters: any, options: IOptions) => {
 const getSingleProduct = async (id: string) => {
   const result = await prisma.product.findUnique({
     where: { id: id, isDeleted: false },
+    include: {
+      reviews: true
+    }
   });
   if (!result) {
     throw new AppError('Product not found!!', httpStatus.NOT_FOUND);
