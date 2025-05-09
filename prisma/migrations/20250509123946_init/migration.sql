@@ -5,9 +5,6 @@ CREATE TYPE "Role" AS ENUM ('USER', 'COMPANY', 'ADMIN');
 CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'SUSPENDED');
 
 -- CreateEnum
-CREATE TYPE "ReviewStatus" AS ENUM ('PENDING', 'PUBLISHED', 'UNPUBLISHED');
-
--- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
 
 -- CreateTable
@@ -101,14 +98,10 @@ CREATE TABLE "reviews" (
     "rating" INTEGER NOT NULL,
     "categoryId" TEXT NOT NULL,
     "productId" TEXT,
-    "purchaseSource" TEXT,
-    "images" TEXT[],
     "isPremium" BOOLEAN NOT NULL DEFAULT false,
-    "reviewerName" TEXT NOT NULL,
-    "reviewerEmail" TEXT NOT NULL,
+    "reviewerName" TEXT,
+    "reviewerEmail" TEXT,
     "reviewerProfilePhoto" TEXT,
-    "status" "ReviewStatus" NOT NULL DEFAULT 'PENDING',
-    "moderationNote" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,

@@ -26,16 +26,20 @@ const getSingleComment = async (id: string) => {
 };
 
 const createComment = async (req: Request) => {
-  const { reviewId, accountId, content } = req.body;
+  const { email } = req?.user;
+  const isExistAccount = await prisma.account.findUnique({ where: { email, isDeleted: false, status: "ACTIVE" } })
+  if (!isExistAccount) {
+    throw new AppError("Account not found!!", status.NOT_FOUND)
+  }
+  const { reviewId, content } = req.body;
 
-  if (!reviewId || !accountId || !content) {
+  if (!reviewId || !content) {
     throw new AppError('Missing required fields!', status.BAD_REQUEST);
   }
-
   const result = await prisma.reviewComment.create({
     data: {
       reviewId,
-      accountId,
+      accountId: isExistAccount.id,
       content,
     },
   });
