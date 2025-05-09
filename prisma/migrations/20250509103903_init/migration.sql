@@ -104,12 +104,15 @@ CREATE TABLE "reviews" (
     "purchaseSource" TEXT,
     "images" TEXT[],
     "isPremium" BOOLEAN NOT NULL DEFAULT false,
-    "accountId" TEXT NOT NULL,
+    "reviewerName" TEXT NOT NULL,
+    "reviewerEmail" TEXT NOT NULL,
+    "reviewerProfilePhoto" TEXT,
     "status" "ReviewStatus" NOT NULL DEFAULT 'PENDING',
     "moderationNote" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "accountId" TEXT,
 
     CONSTRAINT "reviews_pkey" PRIMARY KEY ("id")
 );
@@ -138,6 +141,23 @@ CREATE TABLE "review_comments" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "review_comments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "teams" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "profileImage" TEXT,
+    "description" TEXT NOT NULL,
+    "gitHub" TEXT NOT NULL,
+    "linkedIn" TEXT NOT NULL,
+    "facebook" TEXT NOT NULL,
+    "portfolio" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "teams_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -180,7 +200,7 @@ ALTER TABLE "reviews" ADD CONSTRAINT "reviews_categoryId_fkey" FOREIGN KEY ("cat
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "reviews" ADD CONSTRAINT "reviews_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "votes" ADD CONSTRAINT "votes_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "reviews"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
