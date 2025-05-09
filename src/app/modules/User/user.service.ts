@@ -193,7 +193,15 @@ const updateUser = async (
             }
         });
     });
-
+    EmailSender(
+        isAccountExist?.email,
+        "Profile update successful.",
+        `
+          <p>Hi there,</p>
+      
+          <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
+        `
+    )
     return await prisma.user.findUnique({
         where: {
             id: isAccountExist?.user?.id
@@ -212,17 +220,6 @@ const updateUser = async (
             }
         }
     });
-
-    EmailSender(
-        isAccountExist.email,
-        "Profile update successful.",
-        `
-          <p>Hi there,</p>
-      
-          <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
-        `
-    )
-    return updateuserInfo;
 };
 
 
