@@ -43,10 +43,11 @@ const getReviewByUserId = catchAsyncResponse(async (req, res) => {
 });
 
 const createReview = catchAsyncResponse(async (req, res) => {
-  const userEmail = req?.user?.email;
+  const { email } = req?.user;
   const result = await reviewService.createReview(
     req.body,
-    userEmail as string,
+    email
+
   );
   manageResponse(res, {
     statusCode: status.CREATED,
@@ -81,6 +82,7 @@ const deleteReview = catchAsyncResponse(async (req, res) => {
     data: null,
   });
 });
+
 const getAllPremiumReview = catchAsyncResponse(async (req, res) => {
   const result = await reviewService.getAllPremiumReview();
   manageResponse(res, {

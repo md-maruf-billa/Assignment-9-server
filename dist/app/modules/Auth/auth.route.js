@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authRouter = void 0;
+const express_1 = require("express");
+const auth_controller_1 = require("./auth.controller");
+const requestValidator_1 = __importDefault(require("../../middlewares/requestValidator"));
+const auth_validation_1 = require("./auth.validation");
+const auth_1 = __importDefault(require("../../middlewares/auth"));
+const router = (0, express_1.Router)();
+router.post('/login', (0, requestValidator_1.default)(auth_validation_1.AuthValidation.loginUser), auth_controller_1.AuthController.login_user);
+router.post('/register', (0, requestValidator_1.default)(auth_validation_1.AuthValidation.registerUser), auth_controller_1.AuthController.register_user);
+router.get('/me', (0, auth_1.default)("ADMIN", "COMPANY", "USER"), auth_controller_1.AuthController.get_my_profile);
+router.post('/refresh-token', auth_controller_1.AuthController.refresh_token);
+router.post('/change-password', (0, auth_1.default)("ADMIN", "COMPANY", "USER"), (0, requestValidator_1.default)(auth_validation_1.AuthValidation.changePassword), auth_controller_1.AuthController.change_password);
+router.post('/forgot-password', (0, requestValidator_1.default)(auth_validation_1.AuthValidation.forgotPassword), auth_controller_1.AuthController.forget_password);
+router.post('/reset-password', (0, requestValidator_1.default)(auth_validation_1.AuthValidation.resetPassword), auth_controller_1.AuthController.reset_password);
+exports.authRouter = router;

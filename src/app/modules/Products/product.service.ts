@@ -97,6 +97,23 @@ const getProduct = async (filters: any, options: IOptions) => {
 const getSingleProduct = async (id: string) => {
   const result = await prisma.product.findUnique({
     where: { id: id, isDeleted: false },
+    include: {
+      reviews: {
+        include: {
+          ReviewComment: {
+            include: {
+              account: {
+                include: {
+                  user: true,
+                  admin: true,
+                }
+              }
+            }
+          },
+          votes: true
+        }
+      }
+    }
   });
   if (!result) {
     throw new AppError('Product not found!!', httpStatus.NOT_FOUND);
@@ -121,7 +138,6 @@ const createProduct = async (req: Request) => {
     req.body.imageUrl = uploadedImage?.secure_url;
   }
   req.body.companyId = isAccountExist?.company?.id;
-
   const result = await prisma.product.create({
     data: req.body,
   });

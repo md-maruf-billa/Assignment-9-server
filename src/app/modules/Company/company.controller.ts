@@ -32,8 +32,7 @@ const get_specific_company = catchAsyncResponse(async (req, res) => {
 })
 
 const update_company_info = catchAsyncResponse(async (req, res) => {
-    const { id } = req?.params;
-    const result = await company_services.update_company_info_into_db(id, req)
+    const result = await company_services.update_company_info_into_db(req)
     manageResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

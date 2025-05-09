@@ -19,12 +19,6 @@ enum AccountStatus {
   SUSPENDED
 }
 
-enum ReviewStatus {
-  PENDING
-  PUBLISHED
-  UNPUBLISHED
-}
-
 model Category {
   id            String    @id @default(uuid())
   categoryImage String
@@ -43,12 +37,14 @@ model Account {
   status            AccountStatus   @default(ACTIVE)
   isDeleted         Boolean         @default(false)
   isCompleteProfile Boolean         @default(false)
+  isPremium         Boolean         @default(false)
   user              User?
   company           Company?
   admin             Admin?
   reviews           Review[]
   votes             Vote[]
   ReviewComment     ReviewComment[]
+  payment           Payment?
 
   @@map("accounts")
 }
@@ -116,26 +112,25 @@ model Product {
 }
 
 model Review {
-  id             String          @id @default(uuid())
-  title          String
-  description    String
-  rating         Int
-  categoryId     String
-  category       Category        @relation(fields: [categoryId], references: [id])
-  productId      String?
-  product        Product?        @relation(fields: [productId], references: [id])
-  purchaseSource String?
-  images         String[]
-  isPremium      Boolean         @default(false)
-  accountId      String
-  account        Account         @relation(fields: [accountId], references: [id])
-  status         ReviewStatus    @default(PENDING)
-  moderationNote String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  isDeleted      Boolean         @default(false)
-  votes          Vote[]
-  ReviewComment  ReviewComment[]
+  id                   String          @id @default(uuid())
+  title                String
+  description          String
+  rating               Int
+  categoryId           String
+  category             Category        @relation(fields: [categoryId], references: [id])
+  productId            String?
+  product              Product?        @relation(fields: [productId], references: [id])
+  isPremium            Boolean         @default(false)
+  reviewerName         String?
+  reviewerEmail        String?
+  reviewerProfilePhoto String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  isDeleted            Boolean         @default(false)
+  votes                Vote[]
+  ReviewComment        ReviewComment[]
+  Account              Account?        @relation(fields: [accountId], references: [id])
+  accountId            String?
 
   @@map("reviews")
 }
@@ -169,9 +164,31 @@ model ReviewComment {
   @@map("review_comments")
 }
 
+model Payment {
+  id        String  @id @default(uuid())
+  accountId String  @unique
+  account   Account @relation(fields: [accountId], references: [id])
+
+  transactionId      String        @unique
+  amount             Float
+  status             PaymentStatus @default(UNPAID)
+  paymentGatewayData Json?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  isDeleted          Boolean       @default(false)
+
+  @@map("payments")
+}
+
 enum VoteType {
   UPVOTE
   DOWNVOTE
+}
+
+
+enum PaymentStatus {
+  PAID
+  UNPAID
 }
 
 model Team {

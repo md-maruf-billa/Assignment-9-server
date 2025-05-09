@@ -8,6 +8,7 @@ import uploadCloud from '../../utils/cloudinary';
 import { IOptions, paginationHelper } from '../../utils/peginationHelper';
 import { Prisma } from '@prisma/client';
 import { userSearchTerm } from './user.constant';
+import { EmailSender } from '../../utils/emailSender';
 
 // get all users
 const getUsers = async (
@@ -88,6 +89,7 @@ const getUsers = async (
                     isDeleted: true,
                     status: true,
                     isCompleteProfile: true,
+                    isPremium: true,
                 }
             }
         }
@@ -124,6 +126,7 @@ const getUserById = async (id: string) => {
                     isDeleted: true,
                     status: true,
                     isCompleteProfile: true,
+                    isPremium: true
                 }
             }
         }
@@ -166,8 +169,9 @@ const updateUser = async (
         const uploadedImage = await uploadCloud(req.file);
         req.body.profileImage = uploadedImage?.secure_url;
     };
-    const updateuserInfo = await prisma.$transaction(async (tClient) => {
-        const updateData = await tClient.user.update({
+
+    await prisma.$transaction(async (tClient) => {
+        await tClient.user.update({
             where: {
                 id: isAccountExist?.user?.id
             },
@@ -183,11 +187,39 @@ const updateUser = async (
             },
             data: {
                 isCompleteProfile: true
+            },
+            include: {
+                user: true
             }
         });
-        return updateData;
     });
-    return updateuserInfo;
+    EmailSender(
+        isAccountExist?.email,
+        "Profile update successful.",
+        `
+          <p>Hi there,</p>
+      
+          <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
+        `
+    )
+    return await prisma.user.findUnique({
+        where: {
+            id: isAccountExist?.user?.id
+        },
+        include: {
+            account: {
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    isDeleted: true,
+                    status: true,
+                    isCompleteProfile: true,
+                    isPremium: true,
+                }
+            }
+        }
+    });
 };
 
 
