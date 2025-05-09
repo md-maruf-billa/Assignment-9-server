@@ -190,6 +190,7 @@ enum PaymentStatus {
   PAID
   UNPAID
 }
+
 model Team {
   id           String   @id @default(uuid())
   name         String
