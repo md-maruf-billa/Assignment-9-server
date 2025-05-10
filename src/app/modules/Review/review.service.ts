@@ -39,17 +39,6 @@ const getReview = async (filters: any, options: IOptions) => {
     });
   }
 
-  // if (Object.keys(filterData).length > 0) {
-  //     andConditions.push({
-  //         AND: Object.keys(filterData).map(key => ({
-  //             [key]: {
-  //                 contains: (filterData as any)[key],
-  //                 mode: 'insensitive',
-  //             },
-  //         })),
-  //     });
-  // }
-
   // Filter Logic
   if (filterData.title) {
     andConditions.push({
@@ -127,6 +116,11 @@ const getReview = async (filters: any, options: IOptions) => {
 const getSingleReview = async (id: string) => {
   const isExistReview = await prisma.review.findUnique({
     where: { id, isDeleted: false },
+    include: {
+      category: true,
+      product: true,
+
+    }
   });
   if (!isExistReview) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -134,9 +128,9 @@ const getSingleReview = async (id: string) => {
   return isExistReview;
 };
 
-const getReviewByUserId = async (id: string) => {
+const getReviewByUserId = async (email: string) => {
   const result = await prisma.review.findMany({
-    where: { accountId: id, isDeleted: false },
+    where: { reviewerEmail: email, isDeleted: false },
   });
   if (!result) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -221,6 +215,10 @@ const deleteReview = async (reviewId: string, userId: string) => {
 const getAllPremiumReview = async () => {
   const result = await prisma.review.findMany({
     where: { isDeleted: false, isPremium: true },
+    include: {
+      category: true,
+      product: true
+    }
   });
   if (!result) {
     throw new AppError('No premium reviews found', status.NOT_FOUND);

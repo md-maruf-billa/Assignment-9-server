@@ -20,7 +20,7 @@ router.get(
 
 router.get('/:id', reviewController.getSingleReview);
 router.get(
-  '/user/:userId',
+  '/user-email',
   auth('ADMIN', 'USER'),
   reviewController.getReviewByUserId,
 );

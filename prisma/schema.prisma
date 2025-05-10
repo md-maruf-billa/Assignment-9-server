@@ -41,7 +41,6 @@ model Account {
   user              User?
   company           Company?
   admin             Admin?
-  reviews           Review[]
   votes             Vote[]
   ReviewComment     ReviewComment[]
   payment           Payment?
@@ -129,8 +128,6 @@ model Review {
   isDeleted            Boolean         @default(false)
   votes                Vote[]
   ReviewComment        ReviewComment[]
-  Account              Account?        @relation(fields: [accountId], references: [id])
-  accountId            String?
 
   @@map("reviews")
 }
