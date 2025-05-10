@@ -182,6 +182,7 @@ enum VoteType {
   DOWNVOTE
 }
 
+
 enum PaymentStatus {
   PAID
   UNPAID
