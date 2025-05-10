@@ -41,7 +41,8 @@ const getSingleReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
     });
 }));
 const getReviewByUserId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield review_service_1.reviewService.getReviewByUserId(req.params.userId);
+    const { email } = req === null || req === void 0 ? void 0 : req.user;
+    const result = yield review_service_1.reviewService.getReviewByUserId(email);
     (0, manageRes_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -60,8 +61,9 @@ const createReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 const updateReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId, reviewId } = req === null || req === void 0 ? void 0 : req.query;
-    const result = yield review_service_1.reviewService.updateReview(req.body, reviewId, userId);
+    const { reviewId } = req === null || req === void 0 ? void 0 : req.query;
+    const { email } = req === null || req === void 0 ? void 0 : req.user;
+    const result = yield review_service_1.reviewService.updateReview(req.body, reviewId, email);
     (0, manageRes_1.default)(res, {
         statusCode: http_status_1.default.CREATED,
         success: true,
@@ -70,8 +72,9 @@ const updateReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 const deleteReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId, reviewId } = req === null || req === void 0 ? void 0 : req.query;
-    yield review_service_1.reviewService.deleteReview(reviewId, userId);
+    const { reviewId } = req === null || req === void 0 ? void 0 : req.query;
+    const { email } = req === null || req === void 0 ? void 0 : req.user;
+    yield review_service_1.reviewService.deleteReview(reviewId, email);
     (0, manageRes_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -88,6 +91,16 @@ const getAllPremiumReview = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         data: result,
     });
 }));
+const manage_votes = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { reviewId, type } = req === null || req === void 0 ? void 0 : req.query;
+    const result = yield review_service_1.reviewService.manage_votes_into_db(reviewId, type);
+    (0, manageRes_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Voting don.',
+        data: result,
+    });
+}));
 exports.reviewController = {
     createReview,
     updateReview,
@@ -96,4 +109,5 @@ exports.reviewController = {
     getSingleReview,
     getReviewByUserId,
     getAllPremiumReview,
+    manage_votes
 };

@@ -6,7 +6,6 @@ import { categoryRouter } from '../modules/Category/category.routes';
 import { productRouters } from '../modules/Products/product.route';
 import { userRouters } from '../modules/User/user.route';
 import { commentRouters } from '../modules/CommentReview/comment.route';
-import { voteRoutes } from '../modules/Vote/vote.route';
 import { paymentRoutes } from '../modules/Payment/payment.route';
 import teamRouter from '../modules/Team/team.route';
 
@@ -21,7 +20,6 @@ const moduleRoutes = [
   { path: '/product', route: productRouters },
   { path: '/user', route: userRouters },
   { path: '/comment', route: commentRouters },
-  { path: '/vote', route: voteRoutes },
   { path: '/payment', route: paymentRoutes },
   { path: "/team", route: teamRouter }
 ];

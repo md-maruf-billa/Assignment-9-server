@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "reviews" ADD COLUMN     "downVotes" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "upVotes" INTEGER NOT NULL DEFAULT 0;

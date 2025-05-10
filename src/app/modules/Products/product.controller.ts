@@ -32,6 +32,15 @@ const getSingleProduct = catchAsyncResponse(async (req, res) => {
     data: result,
   });
 });
+const get_product_by_category = catchAsyncResponse(async (req, res) => {
+  const result = await productService.get_product_by_category_from_db(req.params.id);
+  manageResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Single Product fetched successfully',
+    data: result,
+  });
+});
 
 const createProduct = catchAsyncResponse(async (req, res) => {
   console.log(req.body?.data)
@@ -74,4 +83,5 @@ export const productController = {
   createProduct,
   updateProduct,
   softDeleteProduct,
+  get_product_by_category
 };

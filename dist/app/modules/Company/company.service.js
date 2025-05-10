@@ -112,7 +112,6 @@ const get_specific_company_from_db = (id) => __awaiter(void 0, void 0, void 0, f
                                     }
                                 }
                             },
-                            votes: true
                         }
                     }
                 }
