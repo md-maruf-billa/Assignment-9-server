@@ -131,6 +131,10 @@ const getSingleReview = async (id: string) => {
 const getReviewByUserId = async (email: string) => {
   const result = await prisma.review.findMany({
     where: { reviewerEmail: email, isDeleted: false },
+    include: {
+      product: true,
+      category: true
+    }
   });
   if (!result) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -178,12 +182,12 @@ const createReview = async (reviewData: Review, email: string) => {
 const updateReview = async (
   updatedData: Partial<Review>,
   reviewId: string,
-  userId: string,
+  email: string,
 ) => {
   const existing = await prisma.review.findUniqueOrThrow({
     where: { id: reviewId, isDeleted: false },
   });
-  if (!existing || existing.accountId !== userId) {
+  if (!existing || existing.reviewerEmail !== email) {
     throw new AppError('Unauthorized or review not found', status.UNAUTHORIZED);
   }
   const result = await prisma.review.update({
@@ -192,12 +196,12 @@ const updateReview = async (
   });
   return result;
 };
-const deleteReview = async (reviewId: string, userId: string) => {
+const deleteReview = async (reviewId: string, email: string) => {
   const existing = await prisma.review.findUniqueOrThrow({
     where: { id: reviewId, isDeleted: false },
   });
 
-  if (existing?.accountId !== userId) {
+  if (existing?.reviewerEmail !== email) {
     throw new AppError(
       'Unauthorized to delete this review',
       status.UNAUTHORIZED,
@@ -226,6 +230,34 @@ const getAllPremiumReview = async () => {
   return result;
 };
 
+const manage_votes_into_db = async (reviewId: string, type: string) => {
+  const isReviewExist = await prisma.review.findUnique({ where: { id: reviewId, isDeleted: false } })
+  if (!isReviewExist) {
+    throw new AppError("Review not found !!", status.NOT_FOUND)
+  }
+  if (type == "up") {
+    await prisma.review.update({
+      where: {
+        id: reviewId
+      },
+      data: {
+        upVotes: isReviewExist.upVotes + 1
+      }
+    })
+  }
+  else if (type == "down") {
+    await prisma.review.update({
+      where: {
+        id: reviewId
+      },
+      data: {
+        downVotes: isReviewExist.downVotes + 1
+      }
+    })
+  }
+  return
+}
+
 export const reviewService = {
   createReview,
   updateReview,
@@ -234,4 +266,5 @@ export const reviewService = {
   getSingleReview,
   getReviewByUserId,
   getAllPremiumReview,
+  manage_votes_into_db
 };

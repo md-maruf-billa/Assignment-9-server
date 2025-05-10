@@ -105,7 +105,6 @@ const get_specific_company_from_db = async (id: string) => {
                                     }
                                 }
                             },
-                            votes: true
                         }
                     }
                 }

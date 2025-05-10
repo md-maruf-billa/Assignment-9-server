@@ -9,6 +9,7 @@ const router = Router();
 
 router.get('/', productController.getProducts);
 router.get('/:id', productController.getSingleProduct);
+router.get('/category/:id', productController.get_product_by_category);
 router.post(
   '/create-product',
   auth('COMPANY', 'ADMIN'),

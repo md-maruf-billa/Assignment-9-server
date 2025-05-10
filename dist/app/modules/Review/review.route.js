@@ -12,10 +12,11 @@ const router = (0, express_1.Router)();
 router.get('/', review_controller_1.reviewController.getReview);
 router.get('/premiumReviews', (0, auth_1.default)('ADMIN'), review_controller_1.reviewController.getAllPremiumReview);
 router.get('/:id', review_controller_1.reviewController.getSingleReview);
-router.get('/user/:userId', (0, auth_1.default)('ADMIN', 'USER'), review_controller_1.reviewController.getReviewByUserId);
+router.get('/user-email', (0, auth_1.default)('ADMIN', 'USER'), review_controller_1.reviewController.getReviewByUserId);
 router.post('/create-review', (0, auth_1.default)('ADMIN', 'USER'), (0, requestValidator_1.default)(review_validation_1.reviewValidation.createReview), review_controller_1.reviewController.createReview);
 router.patch('/update-review', (0, auth_1.default)('ADMIN', 'USER'), (0, requestValidator_1.default)(review_validation_1.reviewValidation.updateReview), review_controller_1.reviewController.updateReview);
 router.delete('/delete-review', (0, auth_1.default)('ADMIN', 'USER'), review_controller_1.reviewController.deleteReview);
 router.post('/create-review/', (0, auth_1.default)('USER', 'ADMIN'), (0, requestValidator_1.default)(review_validation_1.reviewValidation.createReview), review_controller_1.reviewController.createReview);
+router.put("/vote", (0, auth_1.default)("ADMIN", "USER"), review_controller_1.reviewController.manage_votes);
 exports.default = router;
 // primeReview updated

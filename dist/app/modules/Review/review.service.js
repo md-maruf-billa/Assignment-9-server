@@ -58,16 +58,6 @@ const getReview = (filters, options) => __awaiter(void 0, void 0, void 0, functi
             ],
         });
     }
-    // if (Object.keys(filterData).length > 0) {
-    //     andConditions.push({
-    //         AND: Object.keys(filterData).map(key => ({
-    //             [key]: {
-    //                 contains: (filterData as any)[key],
-    //                 mode: 'insensitive',
-    //             },
-    //         })),
-    //     });
-    // }
     // Filter Logic
     if (filterData.title) {
         andConditions.push({
@@ -131,15 +121,23 @@ const getReview = (filters, options) => __awaiter(void 0, void 0, void 0, functi
 const getSingleReview = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const isExistReview = yield Prisma_1.prisma.review.findUnique({
         where: { id, isDeleted: false },
+        include: {
+            category: true,
+            product: true,
+        }
     });
     if (!isExistReview) {
         throw new AppError_1.AppError('Review not found !!', http_status_1.default.NOT_FOUND);
     }
     return isExistReview;
 });
-const getReviewByUserId = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const getReviewByUserId = (email) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Prisma_1.prisma.review.findMany({
-        where: { accountId: id, isDeleted: false },
+        where: { reviewerEmail: email, isDeleted: false },
+        include: {
+            product: true,
+            category: true
+        }
     });
     if (!result) {
         throw new AppError_1.AppError('Review not found !!', http_status_1.default.NOT_FOUND);
@@ -173,11 +171,11 @@ const createReview = (reviewData, email) => __awaiter(void 0, void 0, void 0, fu
     });
     return result;
 });
-const updateReview = (updatedData, reviewId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+const updateReview = (updatedData, reviewId, email) => __awaiter(void 0, void 0, void 0, function* () {
     const existing = yield Prisma_1.prisma.review.findUniqueOrThrow({
         where: { id: reviewId, isDeleted: false },
     });
-    if (!existing || existing.accountId !== userId) {
+    if (!existing || existing.reviewerEmail !== email) {
         throw new AppError_1.AppError('Unauthorized or review not found', http_status_1.default.UNAUTHORIZED);
     }
     const result = yield Prisma_1.prisma.review.update({
@@ -186,11 +184,11 @@ const updateReview = (updatedData, reviewId, userId) => __awaiter(void 0, void 0
     });
     return result;
 });
-const deleteReview = (reviewId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteReview = (reviewId, email) => __awaiter(void 0, void 0, void 0, function* () {
     const existing = yield Prisma_1.prisma.review.findUniqueOrThrow({
         where: { id: reviewId, isDeleted: false },
     });
-    if ((existing === null || existing === void 0 ? void 0 : existing.accountId) !== userId) {
+    if ((existing === null || existing === void 0 ? void 0 : existing.reviewerEmail) !== email) {
         throw new AppError_1.AppError('Unauthorized to delete this review', http_status_1.default.UNAUTHORIZED);
     }
     const result = yield Prisma_1.prisma.review.update({
@@ -202,11 +200,42 @@ const deleteReview = (reviewId, userId) => __awaiter(void 0, void 0, void 0, fun
 const getAllPremiumReview = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Prisma_1.prisma.review.findMany({
         where: { isDeleted: false, isPremium: true },
+        include: {
+            category: true,
+            product: true
+        }
     });
     if (!result) {
         throw new AppError_1.AppError('No premium reviews found', http_status_1.default.NOT_FOUND);
     }
     return result;
+});
+const manage_votes_into_db = (reviewId, type) => __awaiter(void 0, void 0, void 0, function* () {
+    const isReviewExist = yield Prisma_1.prisma.review.findUnique({ where: { id: reviewId, isDeleted: false } });
+    if (!isReviewExist) {
+        throw new AppError_1.AppError("Review not found !!", http_status_1.default.NOT_FOUND);
+    }
+    if (type == "up") {
+        yield Prisma_1.prisma.review.update({
+            where: {
+                id: reviewId
+            },
+            data: {
+                upVotes: isReviewExist.upVotes + 1
+            }
+        });
+    }
+    if (type == "down") {
+        yield Prisma_1.prisma.review.update({
+            where: {
+                id: reviewId
+            },
+            data: {
+                upVotes: isReviewExist.downVotes + 1
+            }
+        });
+    }
+    return;
 });
 exports.reviewService = {
     createReview,
@@ -216,4 +245,5 @@ exports.reviewService = {
     getSingleReview,
     getReviewByUserId,
     getAllPremiumReview,
+    manage_votes_into_db
 };

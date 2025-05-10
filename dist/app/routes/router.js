@@ -11,7 +11,6 @@ const category_routes_1 = require("../modules/Category/category.routes");
 const product_route_1 = require("../modules/Products/product.route");
 const user_route_1 = require("../modules/User/user.route");
 const comment_route_1 = require("../modules/CommentReview/comment.route");
-const vote_route_1 = require("../modules/Vote/vote.route");
 const payment_route_1 = require("../modules/Payment/payment.route");
 const team_route_1 = __importDefault(require("../modules/Team/team.route"));
 const appRouter = (0, express_1.Router)();
@@ -23,7 +22,6 @@ const moduleRoutes = [
     { path: '/product', route: product_route_1.productRouters },
     { path: '/user', route: user_route_1.userRouters },
     { path: '/comment', route: comment_route_1.commentRouters },
-    { path: '/vote', route: vote_route_1.voteRoutes },
     { path: '/payment', route: payment_route_1.paymentRoutes },
     { path: "/team", route: team_route_1.default }
 ];

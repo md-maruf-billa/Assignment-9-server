@@ -47,6 +47,6 @@ router.post(
   RequestValidator(reviewValidation.createReview),
   reviewController.createReview,
 );
-
+router.put("/vote", auth("ADMIN", "USER"), reviewController.manage_votes)
 export default router;
 // primeReview updated

@@ -41,7 +41,6 @@ model Account {
   user              User?
   company           Company?
   admin             Admin?
-  votes             Vote[]
   ReviewComment     ReviewComment[]
   payment           Payment?
 
@@ -126,25 +125,12 @@ model Review {
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   isDeleted            Boolean         @default(false)
-  votes                Vote[]
   ReviewComment        ReviewComment[]
+  upVotes              Int             @default(0)
+  downVotes            Int             @default(0)
+
 
   @@map("reviews")
-}
-
-model Vote {
-  id           String   @id @default(uuid())
-  reviewId     String
-  accountEmail String
-  type         VoteType
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  review       Review   @relation(fields: [reviewId], references: [id])
-  account      Account  @relation(fields: [accountEmail], references: [email])
-  isDeleted    Boolean  @default(false)
-
-  @@unique([reviewId, accountEmail])
-  @@map("votes")
 }
 
 model ReviewComment {
@@ -176,12 +162,6 @@ model Payment {
 
   @@map("payments")
 }
-
-enum VoteType {
-  UPVOTE
-  DOWNVOTE
-}
-
 
 enum PaymentStatus {
   PAID

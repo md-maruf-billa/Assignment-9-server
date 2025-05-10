@@ -120,7 +120,6 @@ const getSingleProduct = (id) => __awaiter(void 0, void 0, void 0, function* () 
                             }
                         }
                     },
-                    votes: true
                 }
             }
         }
@@ -145,7 +144,6 @@ const createProduct = (req) => __awaiter(void 0, void 0, void 0, function* () {
         req.body.imageUrl = uploadedImage === null || uploadedImage === void 0 ? void 0 : uploadedImage.secure_url;
     }
     req.body.companyId = (_a = isAccountExist === null || isAccountExist === void 0 ? void 0 : isAccountExist.company) === null || _a === void 0 ? void 0 : _a.id;
-    console.log(req === null || req === void 0 ? void 0 : req.body);
     const result = yield Prisma_1.prisma.product.create({
         data: req.body,
     });

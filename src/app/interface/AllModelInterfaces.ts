@@ -22,7 +22,7 @@ export interface Account {
   admin?: Admin | null;
 
   reviews?: Review[];
-  votes?: Vote[];
+
 }
 
 export interface User {
@@ -105,8 +105,6 @@ export interface Review {
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
-
-  votes?: Vote[];
 }
 
 export interface Vote {

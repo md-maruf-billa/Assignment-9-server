@@ -110,7 +110,6 @@ const getSingleProduct = async (id: string) => {
               }
             }
           },
-          votes: true
         }
       }
     }
@@ -118,6 +117,15 @@ const getSingleProduct = async (id: string) => {
   if (!result) {
     throw new AppError('Product not found!!', httpStatus.NOT_FOUND);
   }
+  return result;
+};
+const get_product_by_category_from_db = async (id: string) => {
+  const result = await prisma.product.findMany({
+    where: { categoryId: id },
+    include: { reviews: true }
+
+  });
+
   return result;
 };
 
@@ -180,4 +188,5 @@ export const productService = {
   createProduct,
   updateProduct,
   softDeleteProduct,
+  get_product_by_category_from_db
 };
