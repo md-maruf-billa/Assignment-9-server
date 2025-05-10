@@ -33,7 +33,8 @@ const getSingleReview = catchAsyncResponse(async (req, res) => {
 });
 
 const getReviewByUserId = catchAsyncResponse(async (req, res) => {
-  const result = await reviewService.getReviewByUserId(req.params.userId);
+  const { email } = req?.user;
+  const result = await reviewService.getReviewByUserId(email);
   manageResponse(res, {
     statusCode: status.OK,
     success: true,
