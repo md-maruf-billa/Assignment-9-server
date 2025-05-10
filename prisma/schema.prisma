@@ -129,6 +129,7 @@ model Review {
   upVotes              Int             @default(0)
   downVotes            Int             @default(0)
 
+
   @@map("reviews")
 }
 
