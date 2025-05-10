@@ -162,15 +162,6 @@ model Payment {
   @@map("payments")
 }
 
-<<<<<<< HEAD
-=======
-enum VoteType {
-  UPVOTE
-  DOWNVOTE
-}
-
-
->>>>>>> 8d55bdc65de9558754fc16ef3ddd9dc0c1005852
 enum PaymentStatus {
   PAID
   UNPAID
