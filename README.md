@@ -50,7 +50,7 @@ Copy-Item .env.example .env
 ### 1. Create a New Branch
 
 ```bash
-git branch yourName/what_you_are_working_on
+git branch yourName/what_you_are_working_on_
 git switch yourName/what_you_are_working_on
 ```
 
