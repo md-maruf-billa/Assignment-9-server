@@ -10,11 +10,11 @@ const companyRoute = Router()
 companyRoute.get("/", company_controllers.get_all_companies)
 companyRoute.get("/:id", company_controllers.get_specific_company)
 companyRoute.patch(
-    "/:id",
-    auth("COMPANY", "ADMIN"),
+    "/",
+    auth("COMPANY"),
     uploader.single("image"),
     (req: Request, res: Response, next: NextFunction) => {
-        req.body = company_validation_schemas.update.parse(JSON.parse(req.body.data))
+        req.body = company_validation_schemas.update.parse(JSON.parse(req.body?.data))
         company_controllers.update_company_info(req, res, next)
     })
 

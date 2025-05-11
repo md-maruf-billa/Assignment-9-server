@@ -8,6 +8,7 @@ import uploadCloud from '../../utils/cloudinary';
 import { IOptions, paginationHelper } from '../../utils/peginationHelper';
 import { Prisma } from '@prisma/client';
 import { userSearchTerm } from './user.constant';
+import { EmailSender } from '../../utils/emailSender';
 
 // get all users
 const getUsers = async (
@@ -212,6 +213,16 @@ const updateUser = async (
         }
     });
 
+    EmailSender(
+        isAccountExist.email,
+        "Profile update successful.",
+        `
+          <p>Hi there,</p>
+      
+          <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
+        `
+    )
+    return updateuserInfo;
 };
 
 

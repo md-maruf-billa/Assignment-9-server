@@ -19,7 +19,7 @@ router.post(
   },
 );
 router.patch(
-  '/update-product',
+  '/update-product/:productId',
   uploader.single('image'),
   auth('COMPANY', 'ADMIN'),
   (req: Request, res: Response, next: NextFunction) => {
@@ -28,7 +28,7 @@ router.patch(
   },
 );
 router.delete(
-  '/delete-product',
+  '/delete-product/:productId',
   auth('COMPANY', 'ADMIN'),
   productController.softDeleteProduct,
 );

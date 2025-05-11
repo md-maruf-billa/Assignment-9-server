@@ -8,6 +8,8 @@ import { userRouters } from '../modules/User/user.route';
 import { commentRouters } from '../modules/CommentReview/comment.route';
 import { voteRoutes } from '../modules/Vote/vote.route';
 import { paymentRoutes } from '../modules/Payment/payment.route';
+import teamRouter from '../modules/Team/team.route';
+
 
 const appRouter = Router();
 
@@ -21,6 +23,7 @@ const moduleRoutes = [
   { path: '/comment', route: commentRouters },
   { path: '/vote', route: voteRoutes },
   { path: '/payment', route: paymentRoutes },
+  { path: "/team", route: teamRouter }
 ];
 
 moduleRoutes.forEach(route => appRouter.use(route.path, route.route));
