@@ -173,7 +173,7 @@ const createReview = async (reviewData: Review, email: string) => {
     ...userData
   }
   const result = await prisma.review.create({
-    data: { ...reviewData, ...userData },
+    data: { ...data },
 
   });
   return result;

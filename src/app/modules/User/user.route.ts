@@ -12,7 +12,7 @@ router.get('/:id', userController.getUserById);
 
 router.patch(
   '/',
-  auth('USER'),
+  auth('USER', "ADMIN"),
   uploader.single('image'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = userValidation.updateUser.parse(JSON.parse(req.body.data));
