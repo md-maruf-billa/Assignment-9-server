@@ -1,4 +1,37 @@
-# 🌟 ReviewHub
+
+# ReviewHub API Server
+
+## 🚀 Project Overview
+
+This is a backend server application built with Node.js, Express, and Prisma ORM. The application provides authentication and authorization services with role-based access control (ADMIN, COMPANY, USER). It includes features like user registration, login, profile management, and password management.
+
+## ✨ Key Features
+
+- **Authentication & Authorization**
+    - User registration with role-based accounts (Admin, Company, User)
+    - Secure login with JWT authentication
+    - Role-based access control
+    - Token refresh mechanism
+    - Password change functionality
+
+- **Security**
+    - Password hashing with bcrypt
+    - JWT token-based authentication
+    - HTTP-only cookies for refresh tokens
+
+- **Error Handling**
+    - Global error handling middleware
+    - Custom error classes
+    - Validation using Zod
+
+- **Database**
+    - Prisma ORM for database operations
+    - Transaction support for data integrity
+
+## 🛠️ Getting Started
+
+### 1. Clone the Repository
+
 
 A powerful review management platform with comprehensive API for creating, managing, and interacting with reviews.
 
