@@ -167,7 +167,7 @@ const createReview = (reviewData, email) => __awaiter(void 0, void 0, void 0, fu
     };
     const data = Object.assign(Object.assign({}, reviewData), userData);
     const result = yield Prisma_1.prisma.review.create({
-        data: Object.assign(Object.assign({}, reviewData), userData),
+        data: Object.assign({}, data),
     });
     return result;
 });
@@ -210,7 +210,10 @@ const getAllPremiumReview = () => __awaiter(void 0, void 0, void 0, function* ()
     }
     return result;
 });
-const manage_votes_into_db = (reviewId, type) => __awaiter(void 0, void 0, void 0, function* () {
+const manage_votes_into_db = (reviewId, type, email) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!email) {
+        throw new AppError_1.AppError("You are not authorized !!", http_status_1.default.BAD_REQUEST);
+    }
     const isReviewExist = yield Prisma_1.prisma.review.findUnique({ where: { id: reviewId, isDeleted: false } });
     if (!isReviewExist) {
         throw new AppError_1.AppError("Review not found !!", http_status_1.default.NOT_FOUND);
@@ -225,13 +228,13 @@ const manage_votes_into_db = (reviewId, type) => __awaiter(void 0, void 0, void 
             }
         });
     }
-    if (type == "down") {
+    else if (type == "down") {
         yield Prisma_1.prisma.review.update({
             where: {
                 id: reviewId
             },
             data: {
-                upVotes: isReviewExist.downVotes + 1
+                downVotes: isReviewExist.downVotes + 1
             }
         });
     }

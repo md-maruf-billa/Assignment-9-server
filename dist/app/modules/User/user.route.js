@@ -12,7 +12,7 @@ const auth_1 = __importDefault(require("../../middlewares/auth"));
 const router = (0, express_1.Router)();
 router.get('/', user_controller_1.userController.getUsers);
 router.get('/:id', user_controller_1.userController.getUserById);
-router.patch('/', (0, auth_1.default)('USER'), uploader_1.default.single('image'), (req, res, next) => {
+router.patch('/', (0, auth_1.default)('USER', "ADMIN"), uploader_1.default.single('image'), (req, res, next) => {
     req.body = user_validation_1.userValidation.updateUser.parse(JSON.parse(req.body.data));
     user_controller_1.userController.updateUser(req, res, next);
 });

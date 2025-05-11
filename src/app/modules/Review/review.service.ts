@@ -230,7 +230,11 @@ const getAllPremiumReview = async () => {
   return result;
 };
 
-const manage_votes_into_db = async (reviewId: string, type: string) => {
+const manage_votes_into_db = async (reviewId: string, type: string, email: string) => {
+  if (!email) {
+    throw new AppError("You are not authorized !!", status.BAD_REQUEST)
+  }
+
   const isReviewExist = await prisma.review.findUnique({ where: { id: reviewId, isDeleted: false } })
   if (!isReviewExist) {
     throw new AppError("Review not found !!", status.NOT_FOUND)

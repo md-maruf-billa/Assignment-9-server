@@ -93,7 +93,8 @@ const getAllPremiumReview = (0, catchAsync_1.default)((req, res) => __awaiter(vo
 }));
 const manage_votes = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { reviewId, type } = req === null || req === void 0 ? void 0 : req.query;
-    const result = yield review_service_1.reviewService.manage_votes_into_db(reviewId, type);
+    const { email } = req === null || req === void 0 ? void 0 : req.user;
+    const result = yield review_service_1.reviewService.manage_votes_into_db(reviewId, type, email);
     (0, manageRes_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

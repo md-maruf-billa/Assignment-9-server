@@ -17,4 +17,5 @@ router.post('/refresh-token', auth_controller_1.AuthController.refresh_token);
 router.post('/change-password', (0, auth_1.default)("ADMIN", "COMPANY", "USER"), (0, requestValidator_1.default)(auth_validation_1.AuthValidation.changePassword), auth_controller_1.AuthController.change_password);
 router.post('/forgot-password', (0, requestValidator_1.default)(auth_validation_1.AuthValidation.forgotPassword), auth_controller_1.AuthController.forget_password);
 router.post('/reset-password', (0, requestValidator_1.default)(auth_validation_1.AuthValidation.resetPassword), auth_controller_1.AuthController.reset_password);
+router.patch("/change-account-status", (0, auth_1.default)("ADMIN", "COMPANY", "USER"), (0, requestValidator_1.default)(auth_validation_1.AuthValidation.change_status), auth_controller_1.AuthController.change_account_status);
 exports.authRouter = router;

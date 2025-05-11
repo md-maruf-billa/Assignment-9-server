@@ -146,7 +146,6 @@ const getUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 // update user
 const updateUser = (email, req) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     // find account and user account
     const isAccountExist = yield Prisma_1.prisma.account.findUnique({
         where: {
@@ -154,7 +153,8 @@ const updateUser = (email, req) => __awaiter(void 0, void 0, void 0, function* (
             isDeleted: false
         },
         include: {
-            user: true
+            user: true,
+            admin: true
         }
     });
     if (!isAccountExist) {
@@ -168,16 +168,26 @@ const updateUser = (email, req) => __awaiter(void 0, void 0, void 0, function* (
     }
     ;
     yield Prisma_1.prisma.$transaction((tClient) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
-        yield tClient.user.update({
-            where: {
-                id: (_a = isAccountExist === null || isAccountExist === void 0 ? void 0 : isAccountExist.user) === null || _a === void 0 ? void 0 : _a.id
-            },
-            data: req.body,
-            include: {
-                account: true
-            }
-        });
+        var _a, _b;
+        if ((isAccountExist === null || isAccountExist === void 0 ? void 0 : isAccountExist.role) == "ADMIN") {
+            yield tClient.admin.update({
+                where: {
+                    id: (_a = isAccountExist === null || isAccountExist === void 0 ? void 0 : isAccountExist.admin) === null || _a === void 0 ? void 0 : _a.id,
+                },
+                data: req.body,
+            });
+        }
+        else {
+            yield tClient.user.update({
+                where: {
+                    id: (_b = isAccountExist === null || isAccountExist === void 0 ? void 0 : isAccountExist.user) === null || _b === void 0 ? void 0 : _b.id
+                },
+                data: req.body,
+                include: {
+                    account: true
+                }
+            });
+        }
         yield tClient.account.update({
             where: {
                 email
@@ -195,24 +205,7 @@ const updateUser = (email, req) => __awaiter(void 0, void 0, void 0, function* (
       
           <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
         `);
-    return yield Prisma_1.prisma.user.findUnique({
-        where: {
-            id: (_a = isAccountExist === null || isAccountExist === void 0 ? void 0 : isAccountExist.user) === null || _a === void 0 ? void 0 : _a.id
-        },
-        include: {
-            account: {
-                select: {
-                    id: true,
-                    email: true,
-                    role: true,
-                    isDeleted: true,
-                    status: true,
-                    isCompleteProfile: true,
-                    isPremium: true,
-                }
-            }
-        }
-    });
+    return "Profile update successful.";
 });
 // delete user
 const deleteUserFromDB = (email) => __awaiter(void 0, void 0, void 0, function* () {

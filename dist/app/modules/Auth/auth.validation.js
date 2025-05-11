@@ -26,6 +26,10 @@ const resetPassword = zod_1.z.object({
     newPassword: zod_1.z.string(),
     email: zod_1.z.string(),
 });
+const change_status = zod_1.z.object({
+    email: zod_1.z.string().optional(),
+    status: zod_1.z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"])
+});
 exports.AuthValidation = {
     registerUser,
     loginUser,
@@ -33,4 +37,5 @@ exports.AuthValidation = {
     forgotPassword,
     changePassword,
     resetPassword,
+    change_status
 };
