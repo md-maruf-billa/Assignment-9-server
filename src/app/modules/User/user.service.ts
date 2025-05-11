@@ -154,7 +154,8 @@ const updateUser = async (
             isDeleted: false
         },
         include: {
-            user: true
+            user: true,
+            admin: true
         }
     })
     if (!isAccountExist) {
@@ -171,15 +172,24 @@ const updateUser = async (
     };
 
     await prisma.$transaction(async (tClient) => {
-        await tClient.user.update({
-            where: {
-                id: isAccountExist?.user?.id
-            },
-            data: req.body,
-            include: {
-                account: true
-            }
-        });
+        if (isAccountExist?.role == "ADMIN") {
+            await tClient.admin.update({
+                where: {
+                    id: isAccountExist?.admin?.id,
+                },
+                data: req.body,
+            });
+        } else {
+            await tClient.user.update({
+                where: {
+                    id: isAccountExist?.user?.id
+                },
+                data: req.body,
+                include: {
+                    account: true
+                }
+            });
+        }
 
         await tClient.account.update({
             where: {
@@ -202,24 +212,7 @@ const updateUser = async (
           <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
         `
     )
-    return await prisma.user.findUnique({
-        where: {
-            id: isAccountExist?.user?.id
-        },
-        include: {
-            account: {
-                select: {
-                    id: true,
-                    email: true,
-                    role: true,
-                    isDeleted: true,
-                    status: true,
-                    isCompleteProfile: true,
-                    isPremium: true,
-                }
-            }
-        }
-    });
+    return "Profile update successful."
 };
 
 
