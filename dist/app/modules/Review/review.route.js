@@ -16,7 +16,6 @@ router.get('/user-email', (0, auth_1.default)('ADMIN', 'USER'), review_controlle
 router.post('/create-review', (0, auth_1.default)('ADMIN', 'USER'), (0, requestValidator_1.default)(review_validation_1.reviewValidation.createReview), review_controller_1.reviewController.createReview);
 router.patch('/update-review', (0, auth_1.default)('ADMIN', 'USER'), (0, requestValidator_1.default)(review_validation_1.reviewValidation.updateReview), review_controller_1.reviewController.updateReview);
 router.delete('/delete-review', (0, auth_1.default)('ADMIN', 'USER'), review_controller_1.reviewController.deleteReview);
-router.post('/create-review/', (0, auth_1.default)('USER', 'ADMIN'), (0, requestValidator_1.default)(review_validation_1.reviewValidation.createReview), review_controller_1.reviewController.createReview);
-router.put("/vote", (0, auth_1.default)("ADMIN", "USER"), review_controller_1.reviewController.manage_votes);
+router.put("/vote", (0, auth_1.default)("ADMIN", "USER", "COMPANY"), review_controller_1.reviewController.manage_votes);
 exports.default = router;
 // primeReview updated

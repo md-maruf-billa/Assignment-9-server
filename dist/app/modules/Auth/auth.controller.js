@@ -92,6 +92,20 @@ const reset_password = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
+const change_account_status = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
+    const payload = {
+        email: ((_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.email) || ((_b = req === null || req === void 0 ? void 0 : req.user) === null || _b === void 0 ? void 0 : _b.email),
+        status: (_c = req === null || req === void 0 ? void 0 : req.body) === null || _c === void 0 ? void 0 : _c.status
+    };
+    const result = yield auth_services_1.AuthService.change_account_status_into_db(payload);
+    (0, manageRes_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Successfully Changed !",
+        data: result
+    });
+}));
 exports.AuthController = {
     register_user,
     get_my_profile,
@@ -100,4 +114,5 @@ exports.AuthController = {
     change_password,
     forget_password,
     reset_password,
+    change_account_status
 };

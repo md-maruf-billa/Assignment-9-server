@@ -7,6 +7,7 @@ import { JwtPayload, Secret } from 'jsonwebtoken';
 import { EmailSender } from '../../utils/emailSender';
 import { AppError } from './../../utils/AppError';
 import { Role } from '@prisma/client';
+import { TChangeStatus } from './auth.interface';
 
 
 const register_user_into_db = async (payload: {
@@ -319,6 +320,28 @@ const reset_password_into_db = async (
   return 'Password reset successfully!';
 };
 
+const change_account_status_into_db = async (payload: TChangeStatus) => {
+  const isAccountExist = await prisma.account.findUnique({
+    where: {
+      email: payload?.email
+    }
+  })
+  if (!isAccountExist) {
+    throw new AppError("Account not found !!", httpStatus.NOT_FOUND)
+  }
+  // update new status
+  const result = await prisma.account.update({
+    where: {
+      email: isAccountExist?.email
+    },
+    data: {
+      status: payload.status
+    }
+  })
+
+  return result
+}
+
 export const AuthService = {
   register_user_into_db,
   login_user_from_db,
@@ -327,4 +350,5 @@ export const AuthService = {
   change_password_from_db,
   forget_password_from_db,
   reset_password_into_db,
+  change_account_status_into_db
 };

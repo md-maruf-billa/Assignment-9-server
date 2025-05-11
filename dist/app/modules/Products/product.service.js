@@ -129,6 +129,13 @@ const getSingleProduct = (id) => __awaiter(void 0, void 0, void 0, function* () 
     }
     return result;
 });
+const get_product_by_category_from_db = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Prisma_1.prisma.product.findMany({
+        where: { categoryId: id },
+        include: { reviews: true }
+    });
+    return result;
+});
 const createProduct = (req) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { email } = req.user;
@@ -182,4 +189,5 @@ exports.productService = {
     createProduct,
     updateProduct,
     softDeleteProduct,
+    get_product_by_category_from_db
 };

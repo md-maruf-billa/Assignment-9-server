@@ -40,6 +40,15 @@ const getSingleProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const get_product_by_category = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield product_service_1.productService.get_product_by_category_from_db(req.params.id);
+    (0, manageRes_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Single Product fetched successfully',
+        data: result,
+    });
+}));
 const createProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     console.log((_a = req.body) === null || _a === void 0 ? void 0 : _a.data);
@@ -77,4 +86,5 @@ exports.productController = {
     createProduct,
     updateProduct,
     softDeleteProduct,
+    get_product_by_category
 };

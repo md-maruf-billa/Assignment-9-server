@@ -39,5 +39,5 @@ router.post(
   RequestValidator(AuthValidation.resetPassword),
   AuthController.reset_password,
 );
-
+router.patch("/change-account-status", auth("ADMIN", "COMPANY", "USER"), RequestValidator(AuthValidation.change_status), AuthController.change_account_status)
 export const authRouter = router;

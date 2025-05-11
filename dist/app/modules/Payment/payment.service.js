@@ -62,17 +62,17 @@ const validatePayment = (payload) => __awaiter(void 0, void 0, void 0, function*
         throw new AppError_1.AppError('Missing transaction ID', http_status_1.default.BAD_REQUEST);
     }
     //! this part for production purpose only
-    // if (!payload || !payload.status || !(payload.status === 'VALID')) {
-    //     return {
-    //         message: "Invalid Payment!"
-    //     }
-    // }
-    // const response1 = await SSLService.validatePayment(payload);
-    // if (response1?.status !== 'VALID') {
-    //     return {
-    //         message: "Payment Failed!"
-    //     }
-    // }
+    if (!payload || !payload.status || !(payload.status === 'VALID')) {
+        return {
+            message: "Invalid Payment!"
+        };
+    }
+    const response1 = yield ssl_service_1.SSLService.validatePayment(payload);
+    if ((response1 === null || response1 === void 0 ? void 0 : response1.status) !== 'VALID') {
+        return {
+            message: "Payment Failed!"
+        };
+    }
     const response = payload; // this part for development purpose only
     yield Prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         const updatedPaymentData = yield tx.payment.update({

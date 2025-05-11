@@ -248,6 +248,26 @@ const reset_password_into_db = (token, email, newPassword) => __awaiter(void 0, 
     (0, emailSender_1.EmailSender)(isAccountExists.email, "Password Reset Successful.", `<p>Your password is successfully reset now you can login with using your password</p>`);
     return 'Password reset successfully!';
 });
+const change_account_status_into_db = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isAccountExist = yield Prisma_1.prisma.account.findUnique({
+        where: {
+            email: payload === null || payload === void 0 ? void 0 : payload.email
+        }
+    });
+    if (!isAccountExist) {
+        throw new AppError_1.AppError("Account not found !!", http_status_1.default.NOT_FOUND);
+    }
+    // update new status
+    const result = yield Prisma_1.prisma.account.update({
+        where: {
+            email: isAccountExist === null || isAccountExist === void 0 ? void 0 : isAccountExist.email
+        },
+        data: {
+            status: payload.status
+        }
+    });
+    return result;
+});
 exports.AuthService = {
     register_user_into_db,
     login_user_from_db,
@@ -256,4 +276,5 @@ exports.AuthService = {
     change_password_from_db,
     forget_password_from_db,
     reset_password_into_db,
+    change_account_status_into_db
 };

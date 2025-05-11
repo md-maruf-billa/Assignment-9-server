@@ -42,6 +42,6 @@ router.delete(
   reviewController.deleteReview,
 );
 
-router.put("/vote", auth("ADMIN", "USER"), reviewController.manage_votes)
+router.put("/vote", auth("ADMIN", "USER", "COMPANY"), reviewController.manage_votes)
 export default router;
 // primeReview updated

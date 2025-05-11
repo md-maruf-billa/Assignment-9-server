@@ -98,7 +98,8 @@ const getAllPremiumReview = catchAsyncResponse(async (req, res) => {
 
 const manage_votes = catchAsyncResponse(async (req, res) => {
   const { reviewId, type } = req?.query;
-  const result = await reviewService.manage_votes_into_db(reviewId as string, type as string)
+  const { email } = req?.user
+  const result = await reviewService.manage_votes_into_db(reviewId as string, type as string, email as string)
   manageResponse(res, {
     statusCode: status.OK,
     success: true,

@@ -2,12 +2,9 @@ import status from 'http-status';
 import { AppError } from '../../utils/AppError';
 import { prisma } from '../../utils/Prisma';
 import { Request } from 'express';
-import { verifyToken } from '../../utils/generateToken';
-import configs from '../../configs';
 import uploadCloud from '../../utils/cloudinary';
 import { IOptions, paginationHelper } from '../../utils/peginationHelper';
 import { Prisma } from '@prisma/client';
-import { userSearchTerm } from './user.constant';
 import { EmailSender } from '../../utils/emailSender';
 
 // get all users

@@ -1,3 +1,4 @@
+import { AccountStatus } from '@prisma/client';
 import configs from '../../configs';
 import catchAsyncResponse from '../../utils/catchAsync';
 import manageResponse from '../../utils/manageRes';
@@ -91,6 +92,20 @@ const reset_password = catchAsyncResponse(async (req, res) => {
   });
 });
 
+const change_account_status = catchAsyncResponse(async (req, res) => {
+  const payload = {
+    email: req?.body?.email || req?.user?.email,
+    status: req?.body?.status as AccountStatus
+  }
+  const result = await AuthService.change_account_status_into_db(payload)
+  manageResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Successfully Changed !",
+    data: result
+  })
+})
+
 export const AuthController = {
   register_user,
   get_my_profile,
@@ -99,4 +114,5 @@ export const AuthController = {
   change_password,
   forget_password,
   reset_password,
+  change_account_status
 };
