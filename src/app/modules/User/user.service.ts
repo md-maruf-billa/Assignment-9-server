@@ -2,12 +2,9 @@ import status from 'http-status';
 import { AppError } from '../../utils/AppError';
 import { prisma } from '../../utils/Prisma';
 import { Request } from 'express';
-import { verifyToken } from '../../utils/generateToken';
-import configs from '../../configs';
 import uploadCloud from '../../utils/cloudinary';
 import { IOptions, paginationHelper } from '../../utils/peginationHelper';
 import { Prisma } from '@prisma/client';
-import { userSearchTerm } from './user.constant';
 import { EmailSender } from '../../utils/emailSender';
 
 // get all users
@@ -154,7 +151,8 @@ const updateUser = async (
             isDeleted: false
         },
         include: {
-            user: true
+            user: true,
+            admin: true
         }
     })
     if (!isAccountExist) {
@@ -171,15 +169,24 @@ const updateUser = async (
     };
 
     await prisma.$transaction(async (tClient) => {
-        await tClient.user.update({
-            where: {
-                id: isAccountExist?.user?.id
-            },
-            data: req.body,
-            include: {
-                account: true
-            }
-        });
+        if (isAccountExist?.role == "ADMIN") {
+            await tClient.admin.update({
+                where: {
+                    id: isAccountExist?.admin?.id,
+                },
+                data: req.body,
+            });
+        } else {
+            await tClient.user.update({
+                where: {
+                    id: isAccountExist?.user?.id
+                },
+                data: req.body,
+                include: {
+                    account: true
+                }
+            });
+        }
 
         await tClient.account.update({
             where: {
@@ -193,6 +200,7 @@ const updateUser = async (
             }
         });
     });
+<<<<<<< HEAD
 
     return await prisma.user.findUnique({
         where: {
@@ -215,6 +223,10 @@ const updateUser = async (
 
     EmailSender(
         isAccountExist.email,
+=======
+    EmailSender(
+        isAccountExist?.email,
+>>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
         "Profile update successful.",
         `
           <p>Hi there,</p>
@@ -222,7 +234,11 @@ const updateUser = async (
           <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
         `
     )
+<<<<<<< HEAD
     return updateuserInfo;
+=======
+    return "Profile update successful."
+>>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
 };
 
 

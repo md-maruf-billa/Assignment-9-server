@@ -64,18 +64,18 @@ const validatePayment = async (payload: any) => {
 
     //! this part for production purpose only
 
-    // if (!payload || !payload.status || !(payload.status === 'VALID')) {
-    //     return {
-    //         message: "Invalid Payment!"
-    //     }
-    // }
+    if (!payload || !payload.status || !(payload.status === 'VALID')) {
+        return {
+            message: "Invalid Payment!"
+        }
+    }
 
-    // const response1 = await SSLService.validatePayment(payload);
-    // if (response1?.status !== 'VALID') {
-    //     return {
-    //         message: "Payment Failed!"
-    //     }
-    // }
+    const response1 = await SSLService.validatePayment(payload);
+    if (response1?.status !== 'VALID') {
+        return {
+            message: "Payment Failed!"
+        }
+    }
 
     const response = payload; // this part for development purpose only
 

@@ -104,6 +104,10 @@ const getReview = async (filters: any, options: IOptions) => {
           name: true,
         },
       },
+<<<<<<< HEAD
+=======
+      product: true,
+>>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
     },
   });
 
@@ -125,6 +129,13 @@ const getReview = async (filters: any, options: IOptions) => {
 const getSingleReview = async (id: string) => {
   const isExistReview = await prisma.review.findUnique({
     where: { id, isDeleted: false },
+<<<<<<< HEAD
+=======
+    include: {
+      category: true,
+      product: true,
+    },
+>>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
   });
   if (!isExistReview) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -134,7 +145,11 @@ const getSingleReview = async (id: string) => {
 
 const getReviewByUserId = async (id: string) => {
   const result = await prisma.review.findMany({
-    where: { accountId: id, isDeleted: false },
+    where: { reviewerEmail: email, isDeleted: false },
+    include: {
+      product: true,
+      category: true,
+    },
   });
   if (!result) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -147,31 +162,33 @@ const createReview = async (reviewData: Review, email: string) => {
     where: { email },
     include: {
       user: true,
-      admin: true
-    }
+      admin: true,
+    },
   });
 
   // return isProfileUpdate;
   if (!isProfileUpdate) {
     throw new AppError('Account not found !!', status.NOT_FOUND);
   }
-  if (isProfileUpdate.isCompleteProfile === false) {
-    throw new AppError(
-      'Please complete your profile first',
-      status.BAD_REQUEST,
-    );
-  }
+  // if (isProfileUpdate.isCompleteProfile === false) {
+  //   throw new AppError(
+  //     'Please complete your profile first',
+  //     status.BAD_REQUEST,
+  //   );
+  // }
   const userData = {
     reviewerName: isProfileUpdate?.user?.name || isProfileUpdate?.admin?.name,
     reviewerEmail: isProfileUpdate?.email,
-    reviewerProfilePhoto: isProfileUpdate?.admin?.profileImage || isProfileUpdate?.user?.profileImage
-  }
+    reviewerProfilePhoto:
+      isProfileUpdate?.admin?.profileImage ||
+      isProfileUpdate?.user?.profileImage,
+  };
   const data = {
     ...reviewData,
-    ...userData
-  }
+    ...userData,
+  };
   const result = await prisma.review.create({
-    data: { ...reviewData, ...userData },
+    data: { ...data },
   });
   return result;
 };
@@ -216,11 +233,78 @@ const deleteReview = async (reviewId: string, userId: string) => {
 const getAllPremiumReview = async () => {
   const result = await prisma.review.findMany({
     where: { isDeleted: false, isPremium: true },
+    include: {
+      category: true,
+      product: true,
+    },
   });
   if (!result) {
     throw new AppError('No premium reviews found', status.NOT_FOUND);
   }
   return result;
+};
+
+const manage_votes_into_db = async (
+  reviewId: string,
+  type: string,
+  email: string,
+) => {
+  if (!email) {
+    throw new AppError('You are not authorized !!', status.BAD_REQUEST);
+  }
+
+  const isReviewExist = await prisma.review.findUnique({
+    where: { id: reviewId, isDeleted: false },
+  });
+  if (!isReviewExist) {
+    throw new AppError('Review not found !!', status.NOT_FOUND);
+  }
+
+  // Check if the email has already voted for this review
+  const existingVote = await prisma.reviewEmailVote.findUnique({
+    where: {
+      reviewId_email: {
+        reviewId: reviewId,
+        email: email,
+      },
+    },
+  });
+
+  if (existingVote) {
+    throw new AppError(
+      'You have already voted for this review....',
+      status.BAD_REQUEST,
+    );
+  }
+
+  // Create a record that this email has voted for this review
+  await prisma.reviewEmailVote.create({
+    data: {
+      reviewId: reviewId,
+      email: email,
+    },
+  });
+
+  if (type == 'up') {
+    await prisma.review.update({
+      where: {
+        id: reviewId,
+      },
+      data: {
+        upVotes: isReviewExist.upVotes + 1,
+      },
+    });
+  } else if (type == 'down') {
+    await prisma.review.update({
+      where: {
+        id: reviewId,
+      },
+      data: {
+        downVotes: isReviewExist.downVotes + 1,
+      },
+    });
+  }
+  return;
 };
 
 export const reviewService = {
@@ -231,4 +315,5 @@ export const reviewService = {
   getSingleReview,
   getReviewByUserId,
   getAllPremiumReview,
+  manage_votes_into_db,
 };
