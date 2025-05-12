@@ -65,7 +65,7 @@ A powerful review management platform with comprehensive API for creating, manag
 
 - **Backend**: Node.js, Express.js
 - **Language**: TypeScript
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL.
 - **ORM**: Prisma
 - **Authentication**: JWT (JSON Web Tokens)
 - **Deployment**: Render
