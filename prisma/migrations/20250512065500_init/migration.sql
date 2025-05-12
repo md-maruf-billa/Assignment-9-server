@@ -157,6 +157,16 @@ CREATE TABLE "teams" (
     CONSTRAINT "teams_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "review_email_votes" (
+    "id" TEXT NOT NULL,
+    "reviewId" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "review_email_votes_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
@@ -177,6 +187,9 @@ CREATE UNIQUE INDEX "payments_accountId_key" ON "payments"("accountId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "payments_transactionId_key" ON "payments"("transactionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "review_email_votes_reviewId_email_key" ON "review_email_votes"("reviewId", "email");
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -207,3 +220,6 @@ ALTER TABLE "review_comments" ADD CONSTRAINT "review_comments_reviewId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "payments" ADD CONSTRAINT "payments_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "review_email_votes" ADD CONSTRAINT "review_email_votes_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "reviews"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
