@@ -255,7 +255,7 @@ const manage_votes_into_db = async (
 
   if (existingVote) {
     throw new AppError(
-      'You have already voted for this review R.',
+      'You have already voted for this review....',
       status.BAD_REQUEST,
     );
   }
