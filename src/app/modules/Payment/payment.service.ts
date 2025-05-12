@@ -132,8 +132,45 @@ const getAllPayment = async () => {
     return payments;
 };
 
+
+const getMyPayment = async (req: Request) => {
+
+    const userAccount = await prisma.account.findUnique({
+        where: {
+            email: req.user.email,
+            isDeleted: false,
+        },
+        include: {
+            user: true,
+        }
+    });
+
+    const payments = await prisma.payment.findMany({
+        where: {
+            accountId: userAccount?.id,
+            isDeleted: false,
+            status: "PAID"
+        },
+        include: {
+            account: {
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    isPremium: true,
+                }
+            },
+        }
+    });
+
+    return payments
+};
+
+
+
 export const paymentService = {
     initPayment,
     validatePayment,
-    getAllPayment
+    getAllPayment,
+    getMyPayment
 };

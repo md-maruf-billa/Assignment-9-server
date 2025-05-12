@@ -21,4 +21,10 @@ router.post(
     paymentController.initiatePayment
 );
 
+router.get(
+    '/my-payment',
+    auth('USER'),
+    paymentController.getMyPayment
+)
+
 export const paymentRoutes = router;

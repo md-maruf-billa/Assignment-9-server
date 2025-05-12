@@ -38,8 +38,21 @@ const getAllPayment = catchAsyncResponse(async (req, res) => {
 });
 
 
+const getMyPayment = catchAsyncResponse(async (req, res) => {
+    const result = await paymentService.getMyPayment(req);
+    manageResponse(res, {
+        statusCode: status.OK,
+        success: true,
+        message: "My Payments fetched successfully!",
+        data: result,
+    })
+});
+
+
+
 export const paymentController = {
     initiatePayment,
     validatePayment,
-    getAllPayment
+    getAllPayment,
+    getMyPayment
 };
