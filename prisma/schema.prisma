@@ -128,7 +128,7 @@ model Review {
   ReviewComment        ReviewComment[]
   upVotes              Int             @default(0)
   downVotes            Int             @default(0)
-
+  reviewEmailVotes     ReviewEmailVote[]
 
   @@map("reviews")
 }
@@ -182,4 +182,15 @@ model Team {
   updatedAt    DateTime @updatedAt
 
   @@map("teams")
+}
+
+model ReviewEmailVote {
+  id        String   @id @default(uuid())
+  reviewId  String
+  email     String
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id])
+
+  @@unique([reviewId, email])
+  @@map("review_email_votes")
 }

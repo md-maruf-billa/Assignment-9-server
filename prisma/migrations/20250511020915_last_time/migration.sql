@@ -106,6 +106,8 @@ CREATE TABLE "reviews" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "upVotes" INTEGER NOT NULL DEFAULT 0,
+    "downVotes" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "reviews_pkey" PRIMARY KEY ("id")
 );
