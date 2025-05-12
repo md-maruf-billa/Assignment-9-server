@@ -39,17 +39,6 @@ const getReview = async (filters: any, options: IOptions) => {
     });
   }
 
-  // if (Object.keys(filterData).length > 0) {
-  //     andConditions.push({
-  //         AND: Object.keys(filterData).map(key => ({
-  //             [key]: {
-  //                 contains: (filterData as any)[key],
-  //                 mode: 'insensitive',
-  //             },
-  //         })),
-  //     });
-  // }
-
   // Filter Logic
   if (filterData.title) {
     andConditions.push({
@@ -190,12 +179,12 @@ const createReview = async (reviewData: Review, email: string) => {
 const updateReview = async (
   updatedData: Partial<Review>,
   reviewId: string,
-  userId: string,
+  email: string,
 ) => {
   const existing = await prisma.review.findUniqueOrThrow({
     where: { id: reviewId, isDeleted: false },
   });
-  if (!existing || existing.accountId !== userId) {
+  if (!existing || existing.reviewerEmail !== email) {
     throw new AppError('Unauthorized or review not found', status.UNAUTHORIZED);
   }
   const result = await prisma.review.update({
@@ -204,12 +193,12 @@ const updateReview = async (
   });
   return result;
 };
-const deleteReview = async (reviewId: string, userId: string) => {
+const deleteReview = async (reviewId: string, email: string) => {
   const existing = await prisma.review.findUniqueOrThrow({
     where: { id: reviewId, isDeleted: false },
   });
 
-  if (existing?.accountId !== userId) {
+  if (existing?.reviewerEmail !== email) {
     throw new AppError(
       'Unauthorized to delete this review',
       status.UNAUTHORIZED,

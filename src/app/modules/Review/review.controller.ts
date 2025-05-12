@@ -33,7 +33,8 @@ const getSingleReview = catchAsyncResponse(async (req, res) => {
 });
 
 const getReviewByUserId = catchAsyncResponse(async (req, res) => {
-  const result = await reviewService.getReviewByUserId(req.params.userId);
+  const { email } = req?.user;
+  const result = await reviewService.getReviewByUserId(email);
   manageResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -47,6 +48,7 @@ const createReview = catchAsyncResponse(async (req, res) => {
   const result = await reviewService.createReview(
     req.body,
     email
+
   );
   manageResponse(res, {
     statusCode: status.CREATED,
@@ -57,11 +59,12 @@ const createReview = catchAsyncResponse(async (req, res) => {
 });
 
 const updateReview = catchAsyncResponse(async (req, res) => {
-  const { userId, reviewId } = req?.query;
+  const { reviewId } = req?.query;
+  const { email } = req?.user;
   const result = await reviewService.updateReview(
     req.body,
     reviewId as string,
-    userId as string,
+    email as string,
   );
   manageResponse(res, {
     statusCode: status.CREATED,
@@ -72,8 +75,9 @@ const updateReview = catchAsyncResponse(async (req, res) => {
 });
 
 const deleteReview = catchAsyncResponse(async (req, res) => {
-  const { userId, reviewId } = req?.query;
-  await reviewService.deleteReview(reviewId as string, userId as string);
+  const { reviewId } = req?.query;
+  const { email } = req?.user
+  await reviewService.deleteReview(reviewId as string, email as string);
   manageResponse(res, {
     statusCode: status.OK,
     success: true,

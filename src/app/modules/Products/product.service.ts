@@ -98,12 +98,34 @@ const getSingleProduct = async (id: string) => {
   const result = await prisma.product.findUnique({
     where: { id: id, isDeleted: false },
     include: {
-      reviews: true
+      reviews: {
+        include: {
+          ReviewComment: {
+            include: {
+              account: {
+                include: {
+                  user: true,
+                  admin: true,
+                }
+              }
+            }
+          },
+        }
+      }
     }
   });
   if (!result) {
     throw new AppError('Product not found!!', httpStatus.NOT_FOUND);
   }
+  return result;
+};
+const get_product_by_category_from_db = async (id: string) => {
+  const result = await prisma.product.findMany({
+    where: { categoryId: id },
+    include: { reviews: true }
+
+  });
+
   return result;
 };
 
@@ -124,7 +146,6 @@ const createProduct = async (req: Request) => {
     req.body.imageUrl = uploadedImage?.secure_url;
   }
   req.body.companyId = isAccountExist?.company?.id;
-  console.log(req?.body)
   const result = await prisma.product.create({
     data: req.body,
   });
@@ -167,4 +188,5 @@ export const productService = {
   createProduct,
   updateProduct,
   softDeleteProduct,
+  get_product_by_category_from_db
 };
