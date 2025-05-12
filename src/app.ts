@@ -25,7 +25,7 @@ app.use('/api', appRouter);
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
-    message: 'Welcome to the API!',
+    message: 'Welcome to the API !',
     data: null,
   });
 });
