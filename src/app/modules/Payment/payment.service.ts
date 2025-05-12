@@ -52,41 +52,24 @@ const initPayment = async (req: Request) => {
     return {
         paymentUrl: result.GatewayPageURL
     };
+};
 
-    // return result;
-}
 
-const validatePayment = async (payload: any) => {
+// validate payment
+const validatePayment = async (query: any) => {
 
-    if (!payload?.tran_id) {
+    if (!query?.tran_id) {
         throw new AppError('Missing transaction ID', status.BAD_REQUEST);
     }
-
-    //! this part for production purpose only
-
-    if (!payload || !payload.status || !(payload.status === 'VALID')) {
-        return {
-            message: "Invalid Payment!"
-        }
-    }
-
-    const response1 = await SSLService.validatePayment(payload);
-    if (response1?.status !== 'VALID') {
-        return {
-            message: "Payment Failed!"
-        }
-    }
-
-    const response = payload; // this part for development purpose only
 
     await prisma.$transaction(async (tx) => {
         const updatedPaymentData = await tx.payment.update({
             where: {
-                transactionId: response.tran_id
+                transactionId: query.tran_id
             },
             data: {
                 status: PaymentStatus.PAID,
-                paymentGatewayData: response
+                paymentGatewayData: query
             }
         });
 
@@ -121,7 +104,7 @@ const getAllPayment = async () => {
     });
 
     return payments;
-}
+};
 
 export const paymentService = {
     initPayment,

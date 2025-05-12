@@ -113,4 +113,5 @@ export const reviewController = {
   getSingleReview,
   getReviewByUserId,
   getAllPremiumReview,
+  manage_votes
 };

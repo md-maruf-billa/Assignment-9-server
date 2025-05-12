@@ -104,10 +104,7 @@ const getReview = async (filters: any, options: IOptions) => {
           name: true,
         },
       },
-<<<<<<< HEAD
-=======
       product: true,
->>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
     },
   });
 
@@ -129,13 +126,10 @@ const getReview = async (filters: any, options: IOptions) => {
 const getSingleReview = async (id: string) => {
   const isExistReview = await prisma.review.findUnique({
     where: { id, isDeleted: false },
-<<<<<<< HEAD
-=======
     include: {
       category: true,
       product: true,
     },
->>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
   });
   if (!isExistReview) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -143,7 +137,7 @@ const getSingleReview = async (id: string) => {
   return isExistReview;
 };
 
-const getReviewByUserId = async (id: string) => {
+const getReviewByUserId = async (email: string) => {
   const result = await prisma.review.findMany({
     where: { reviewerEmail: email, isDeleted: false },
     include: {

@@ -3,8 +3,14 @@ import httpStatus, { status } from "http-status";
 import { IPaymentData } from "./ssl.interface";
 import configs from "../../configs";
 import { AppError } from "../../utils/AppError";
+import SSLCommerzPayment from "sslcommerz-lts";
 
 const initPayment = async (paymentData: IPaymentData) => {
+
+    const store_id = configs.ssl.storeId;
+    const store_passwd = configs.ssl.storePass;
+    const is_live = false;
+
     try {
         const data = {
             store_id: configs.ssl.storeId,
@@ -12,10 +18,12 @@ const initPayment = async (paymentData: IPaymentData) => {
             total_amount: paymentData.amount,
             currency: 'BDT',
             tran_id: paymentData.transactionId,
+
             success_url: configs.ssl.successUrl,
             fail_url: configs.ssl.failUrl,
             cancel_url: configs.ssl.cancelUrl,
-            ipn_url: 'http://localhost:3030/ipn', // need to change 
+            ipn_url: 'http://localhost:3030/ipn',
+
             shipping_method: 'N/A',
             product_name: 'Appointment',
             product_category: 'Service',
@@ -39,14 +47,20 @@ const initPayment = async (paymentData: IPaymentData) => {
             ship_country: 'N/A',
         };
 
-        const response = await axios({
-            method: 'post',
-            url: configs.ssl.sslPaymentUrl,
-            data: data,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
 
-        return response.data;
+        const sslcz: any = new SSLCommerzPayment(
+            store_id as string,
+            store_passwd as string,
+            is_live
+        );
+        const apiResponse = await sslcz.init(data);
+        if (!apiResponse?.GatewayPageURL) {
+            throw new AppError(
+                'Failed to get payment gateway URL',
+                httpStatus.BAD_REQUEST
+            );
+        }
+        return { GatewayPageURL: apiResponse.GatewayPageURL };
     }
     catch (err) {
         throw new AppError(
@@ -63,19 +77,17 @@ const validatePayment = async (payload: any) => {
             method: 'GET',
             url: `${configs.ssl.sslValidateUrl}?val_id=${payload.val_id}&store_id=${configs.ssl.storeId}&store_passwd=${configs.ssl.storePass}&format=json`
         });
-
         return response.data;
     }
-    catch (err) {
+    catch (err: any) {
         throw new AppError(
             "Payment validation failed!",
             httpStatus.BAD_REQUEST,
-        )
+        );
     }
-}
-
+};
 
 export const SSLService = {
     initPayment,
     validatePayment
-}
+};

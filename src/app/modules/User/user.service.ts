@@ -200,33 +200,8 @@ const updateUser = async (
             }
         });
     });
-<<<<<<< HEAD
-
-    return await prisma.user.findUnique({
-        where: {
-            id: isAccountExist?.user?.id
-        },
-        include: {
-            account: {
-                select: {
-                    id: true,
-                    email: true,
-                    role: true,
-                    isDeleted: true,
-                    status: true,
-                    isCompleteProfile: true,
-                    isPremium: true,
-                }
-            }
-        }
-    });
-
-    EmailSender(
-        isAccountExist.email,
-=======
     EmailSender(
         isAccountExist?.email,
->>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
         "Profile update successful.",
         `
           <p>Hi there,</p>
@@ -234,11 +209,7 @@ const updateUser = async (
           <p>Your profile is successfully updated. Thanks for stay with us.😍😍😍😍</p>
         `
     )
-<<<<<<< HEAD
-    return updateuserInfo;
-=======
     return "Profile update successful."
->>>>>>> 936dbaf2f0e0b93c1ba5e4c93f0de1d85fc2be82
 };
 
 
