@@ -74,18 +74,18 @@ const validatePayment = async (query: any) => {
         );
     };
 
-    const isPaid = await prisma.payment.findFirst({
-        where: {
-            transactionId: query.tran_id,
-            status: PaymentStatus.PAID
-        }
-    });
-    if (isPaid) {
-        throw new AppError(
-            'Already paid',
-            status.BAD_REQUEST
-        );
-    };
+    // const isPaid = await prisma.payment.findFirst({
+    //     where: {
+    //         transactionId: query.tran_id,
+    //         status: PaymentStatus.PAID
+    //     }
+    // });
+    // if (isPaid) {
+    //     throw new AppError(
+    //         'Already paid',
+    //         status.BAD_REQUEST
+    //     );
+    // };
 
 
     await prisma.$transaction(async (tx) => {
