@@ -157,12 +157,12 @@ const createReview = async (reviewData: Review, email: string) => {
   if (!isProfileUpdate) {
     throw new AppError('Account not found !!', status.NOT_FOUND);
   }
-  if (isProfileUpdate.isCompleteProfile === false) {
-    throw new AppError(
-      'Please complete your profile first',
-      status.BAD_REQUEST,
-    );
-  }
+  // if (isProfileUpdate.isCompleteProfile === false) {
+  //   throw new AppError(
+  //     'Please complete your profile first',
+  //     status.BAD_REQUEST,
+  //   );
+  // }
   const userData = {
     reviewerName: isProfileUpdate?.user?.name || isProfileUpdate?.admin?.name,
     reviewerEmail: isProfileUpdate?.email,
