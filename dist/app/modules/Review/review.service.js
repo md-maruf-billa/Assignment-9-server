@@ -124,7 +124,7 @@ const getSingleReview = (id) => __awaiter(void 0, void 0, void 0, function* () {
         include: {
             category: true,
             product: true,
-        }
+        },
     });
     if (!isExistReview) {
         throw new AppError_1.AppError('Review not found !!', http_status_1.default.NOT_FOUND);
@@ -136,8 +136,8 @@ const getReviewByUserId = (email) => __awaiter(void 0, void 0, void 0, function*
         where: { reviewerEmail: email, isDeleted: false },
         include: {
             product: true,
-            category: true
-        }
+            category: true,
+        },
     });
     if (!result) {
         throw new AppError_1.AppError('Review not found !!', http_status_1.default.NOT_FOUND);
@@ -150,8 +150,8 @@ const createReview = (reviewData, email) => __awaiter(void 0, void 0, void 0, fu
         where: { email },
         include: {
             user: true,
-            admin: true
-        }
+            admin: true,
+        },
     });
     // return isProfileUpdate;
     if (!isProfileUpdate) {
@@ -166,7 +166,8 @@ const createReview = (reviewData, email) => __awaiter(void 0, void 0, void 0, fu
     const userData = {
         reviewerName: ((_a = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.user) === null || _a === void 0 ? void 0 : _a.name) || ((_b = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.admin) === null || _b === void 0 ? void 0 : _b.name),
         reviewerEmail: isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.email,
-        reviewerProfilePhoto: ((_c = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.admin) === null || _c === void 0 ? void 0 : _c.profileImage) || ((_d = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.user) === null || _d === void 0 ? void 0 : _d.profileImage)
+        reviewerProfilePhoto: ((_c = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.admin) === null || _c === void 0 ? void 0 : _c.profileImage) ||
+            ((_d = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.user) === null || _d === void 0 ? void 0 : _d.profileImage),
     };
     const data = Object.assign(Object.assign({}, reviewData), userData);
     const result = yield Prisma_1.prisma.review.create({
@@ -205,8 +206,8 @@ const getAllPremiumReview = () => __awaiter(void 0, void 0, void 0, function* ()
         where: { isDeleted: false, isPremium: true },
         include: {
             category: true,
-            product: true
-        }
+            product: true,
+        },
     });
     if (!result) {
         throw new AppError_1.AppError('No premium reviews found', http_status_1.default.NOT_FOUND);
@@ -215,30 +216,51 @@ const getAllPremiumReview = () => __awaiter(void 0, void 0, void 0, function* ()
 });
 const manage_votes_into_db = (reviewId, type, email) => __awaiter(void 0, void 0, void 0, function* () {
     if (!email) {
-        throw new AppError_1.AppError("You are not authorized !!", http_status_1.default.BAD_REQUEST);
+        throw new AppError_1.AppError('You are not authorized !!', http_status_1.default.BAD_REQUEST);
     }
-    const isReviewExist = yield Prisma_1.prisma.review.findUnique({ where: { id: reviewId, isDeleted: false } });
+    const isReviewExist = yield Prisma_1.prisma.review.findUnique({
+        where: { id: reviewId, isDeleted: false },
+    });
     if (!isReviewExist) {
-        throw new AppError_1.AppError("Review not found !!", http_status_1.default.NOT_FOUND);
+        throw new AppError_1.AppError('Review not found !!', http_status_1.default.NOT_FOUND);
     }
-    if (type == "up") {
+    // Check if the email has already voted for this review
+    const existingVote = yield Prisma_1.prisma.reviewEmailVote.findUnique({
+        where: {
+            reviewId_email: {
+                reviewId: reviewId,
+                email: email,
+            },
+        },
+    });
+    if (existingVote) {
+        throw new AppError_1.AppError('You have already voted for this review....', http_status_1.default.BAD_REQUEST);
+    }
+    // Create a record that this email has voted for this review
+    yield Prisma_1.prisma.reviewEmailVote.create({
+        data: {
+            reviewId: reviewId,
+            email: email,
+        },
+    });
+    if (type == 'up') {
         yield Prisma_1.prisma.review.update({
             where: {
-                id: reviewId
+                id: reviewId,
             },
             data: {
-                upVotes: isReviewExist.upVotes + 1
-            }
+                upVotes: isReviewExist.upVotes + 1,
+            },
         });
     }
-    else if (type == "down") {
+    else if (type == 'down') {
         yield Prisma_1.prisma.review.update({
             where: {
-                id: reviewId
+                id: reviewId,
             },
             data: {
-                downVotes: isReviewExist.downVotes + 1
-            }
+                downVotes: isReviewExist.downVotes + 1,
+            },
         });
     }
     return;
@@ -251,5 +273,5 @@ exports.reviewService = {
     getSingleReview,
     getReviewByUserId,
     getAllPremiumReview,
-    manage_votes_into_db
+    manage_votes_into_db,
 };
