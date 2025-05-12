@@ -19,7 +19,7 @@ const initPayment = async (paymentData: IPaymentData) => {
             currency: 'BDT',
             tran_id: paymentData.transactionId,
 
-            success_url: configs.clientSite_url + `/payment/success/${paymentData.transactionId}`,
+            success_url: configs.clientSite_url + `/api/payment/webhook/${paymentData.transactionId}`,
             fail_url: configs.clientSite_url + '/payment/fail',
             cancel_url: configs.clientSite_url + 'payment/cancel',
             ipn_url: configs.clientSite_url + '/ipn',
