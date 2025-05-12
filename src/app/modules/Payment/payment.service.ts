@@ -59,7 +59,34 @@ const validatePayment = async (query: any) => {
 
     if (!query?.tran_id) {
         throw new AppError('Missing transaction ID', status.BAD_REQUEST);
-    }
+    };
+
+    const payment = await prisma.payment.findUnique({
+        where: {
+            transactionId: query.tran_id
+        }
+    });
+
+    if (!payment) {
+        throw new AppError(
+            'Payment not found',
+            status.BAD_REQUEST
+        );
+    };
+
+    const isPaid = await prisma.payment.findFirst({
+        where: {
+            transactionId: query.tran_id,
+            status: PaymentStatus.PAID
+        }
+    });
+    if (isPaid) {
+        throw new AppError(
+            'Already paid',
+            status.BAD_REQUEST
+        );
+    };
+
 
     await prisma.$transaction(async (tx) => {
         const updatedPaymentData = await tx.payment.update({
