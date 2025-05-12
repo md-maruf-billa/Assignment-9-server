@@ -25,5 +25,7 @@ export default {
         cancelUrl: process.env.CANCEL_URL,
         sslPaymentUrl: process.env.SSL_PAYMENT_API,
         sslValidateUrl: process.env.SSL_VALIDATION_API,
-    }
+    },
+    clientSite_url: process.env.FRONTEND_URL,
+
 }

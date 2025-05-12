@@ -19,10 +19,10 @@ const initPayment = async (paymentData: IPaymentData) => {
             currency: 'BDT',
             tran_id: paymentData.transactionId,
 
-            success_url: configs.ssl.successUrl,
-            fail_url: configs.ssl.failUrl,
-            cancel_url: configs.ssl.cancelUrl,
-            ipn_url: 'http://localhost:3030/ipn',
+            success_url: configs.clientSite_url + `/payment/success/${paymentData.transactionId}`,
+            fail_url: configs.clientSite_url + '/payment/fail',
+            cancel_url: configs.clientSite_url + 'payment/cancel',
+            ipn_url: configs.clientSite_url + '/ipn',
 
             shipping_method: 'N/A',
             product_name: 'Appointment',

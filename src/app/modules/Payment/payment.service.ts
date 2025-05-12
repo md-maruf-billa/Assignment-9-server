@@ -54,7 +54,6 @@ const initPayment = async (req: Request) => {
     };
 };
 
-
 // validate payment
 const validatePayment = async (query: any) => {
 

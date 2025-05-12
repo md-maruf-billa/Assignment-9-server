@@ -11,7 +11,7 @@ router.get(
 );
 
 router.get(
-    '/ipn',
+    '/validate-payment',
     paymentController.validatePayment
 );
 
