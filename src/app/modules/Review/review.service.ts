@@ -94,7 +94,6 @@ const getReview = async (filters: any, options: IOptions) => {
         },
       },
       product: true,
-
     },
   });
 
@@ -119,8 +118,7 @@ const getSingleReview = async (id: string) => {
     include: {
       category: true,
       product: true,
-
-    }
+    },
   });
   if (!isExistReview) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -133,8 +131,8 @@ const getReviewByUserId = async (email: string) => {
     where: { reviewerEmail: email, isDeleted: false },
     include: {
       product: true,
-      category: true
-    }
+      category: true,
+    },
   });
   if (!result) {
     throw new AppError('Review not found !!', status.NOT_FOUND);
@@ -142,39 +140,38 @@ const getReviewByUserId = async (email: string) => {
   return result;
 };
 
-
 const createReview = async (reviewData: Review, email: string) => {
   const isProfileUpdate = await prisma.account.findUnique({
     where: { email },
     include: {
       user: true,
-      admin: true
-    }
-
+      admin: true,
+    },
   });
 
   // return isProfileUpdate;
   if (!isProfileUpdate) {
     throw new AppError('Account not found !!', status.NOT_FOUND);
   }
-  if (isProfileUpdate.isCompleteProfile === false) {
-    throw new AppError(
-      'Please complete your profile first',
-      status.BAD_REQUEST,
-    );
-  }
+  // if (isProfileUpdate.isCompleteProfile === false) {
+  //   throw new AppError(
+  //     'Please complete your profile first',
+  //     status.BAD_REQUEST,
+  //   );
+  // }
   const userData = {
     reviewerName: isProfileUpdate?.user?.name || isProfileUpdate?.admin?.name,
     reviewerEmail: isProfileUpdate?.email,
-    reviewerProfilePhoto: isProfileUpdate?.admin?.profileImage || isProfileUpdate?.user?.profileImage
-  }
+    reviewerProfilePhoto:
+      isProfileUpdate?.admin?.profileImage ||
+      isProfileUpdate?.user?.profileImage,
+  };
   const data = {
     ...reviewData,
-    ...userData
-  }
+    ...userData,
+  };
   const result = await prisma.review.create({
     data: { ...data },
-
   });
   return result;
 };
@@ -221,8 +218,8 @@ const getAllPremiumReview = async () => {
     where: { isDeleted: false, isPremium: true },
     include: {
       category: true,
-      product: true
-    }
+      product: true,
+    },
   });
   if (!result) {
     throw new AppError('No premium reviews found', status.NOT_FOUND);
@@ -230,37 +227,68 @@ const getAllPremiumReview = async () => {
   return result;
 };
 
-const manage_votes_into_db = async (reviewId: string, type: string, email: string) => {
+const manage_votes_into_db = async (
+  reviewId: string,
+  type: string,
+  email: string,
+) => {
   if (!email) {
-    throw new AppError("You are not authorized !!", status.BAD_REQUEST)
+    throw new AppError('You are not authorized !!', status.BAD_REQUEST);
   }
 
-  const isReviewExist = await prisma.review.findUnique({ where: { id: reviewId, isDeleted: false } })
+  const isReviewExist = await prisma.review.findUnique({
+    where: { id: reviewId, isDeleted: false },
+  });
   if (!isReviewExist) {
-    throw new AppError("Review not found !!", status.NOT_FOUND)
+    throw new AppError('Review not found !!', status.NOT_FOUND);
   }
-  if (type == "up") {
+
+  // Check if the email has already voted for this review
+  const existingVote = await prisma.reviewEmailVote.findUnique({
+    where: {
+      reviewId_email: {
+        reviewId: reviewId,
+        email: email,
+      },
+    },
+  });
+
+  if (existingVote) {
+    throw new AppError(
+      'You have already voted for this review....',
+      status.BAD_REQUEST,
+    );
+  }
+
+  // Create a record that this email has voted for this review
+  await prisma.reviewEmailVote.create({
+    data: {
+      reviewId: reviewId,
+      email: email,
+    },
+  });
+
+  if (type == 'up') {
     await prisma.review.update({
       where: {
-        id: reviewId
+        id: reviewId,
       },
       data: {
-        upVotes: isReviewExist.upVotes + 1
-      }
-    })
-  }
-  else if (type == "down") {
+        upVotes: isReviewExist.upVotes + 1,
+      },
+    });
+  } else if (type == 'down') {
     await prisma.review.update({
       where: {
-        id: reviewId
+        id: reviewId,
       },
       data: {
-        downVotes: isReviewExist.downVotes + 1
-      }
-    })
+        downVotes: isReviewExist.downVotes + 1,
+      },
+    });
   }
-  return
-}
+  return;
+};
 
 export const reviewService = {
   createReview,
@@ -270,5 +298,5 @@ export const reviewService = {
   getSingleReview,
   getReviewByUserId,
   getAllPremiumReview,
-  manage_votes_into_db
+  manage_votes_into_db,
 };

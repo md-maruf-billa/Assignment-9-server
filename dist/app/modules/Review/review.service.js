@@ -157,9 +157,12 @@ const createReview = (reviewData, email) => __awaiter(void 0, void 0, void 0, fu
     if (!isProfileUpdate) {
         throw new AppError_1.AppError('Account not found !!', http_status_1.default.NOT_FOUND);
     }
-    if (isProfileUpdate.isCompleteProfile === false) {
-        throw new AppError_1.AppError('Please complete your profile first', http_status_1.default.BAD_REQUEST);
-    }
+    // if (isProfileUpdate.isCompleteProfile === false) {
+    //   throw new AppError(
+    //     'Please complete your profile first',
+    //     status.BAD_REQUEST,
+    //   );
+    // }
     const userData = {
         reviewerName: ((_a = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.user) === null || _a === void 0 ? void 0 : _a.name) || ((_b = isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.admin) === null || _b === void 0 ? void 0 : _b.name),
         reviewerEmail: isProfileUpdate === null || isProfileUpdate === void 0 ? void 0 : isProfileUpdate.email,
