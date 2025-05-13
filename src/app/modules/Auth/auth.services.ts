@@ -160,16 +160,43 @@ const get_my_profile_from_db = async (email: string) => {
       user: {
         select: {
           name: true,
+          id: true,
+          account: true,
+          accountId: true,
+          bio: true,
+          profileImage: true,
+          createdAt: true,
+          updatedAt: true,
+          isDeleted: true
         },
       },
       admin: {
         select: {
           name: true,
+          id: true,
+          account: true,
+          accountId: true,
+          bio: true,
+          profileImage: true,
+          createdAt: true,
+          updatedAt: true,
+          isDeleted: true
         },
       },
       company: {
         select: {
           name: true,
+          _count: true,
+          account: true,
+          accountId: true,
+          companyImage: true,
+          createdAt: true,
+          description: true,
+          id: true,
+          isDeleted: true,
+          // products:true,
+          website: true,
+          updatedAt: true,
         },
       },
     },
@@ -181,7 +208,7 @@ const get_my_profile_from_db = async (email: string) => {
 
   // Add `name` field dynamically
   let name = null;
-  
+
   if (user.admin?.name) {
     name = user.admin.name;
   } else if (user.user?.name) {
