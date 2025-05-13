@@ -9,7 +9,6 @@ import { AppError } from './../../utils/AppError';
 import { Role } from '@prisma/client';
 import { TChangeStatus } from './auth.interface';
 
-
 const register_user_into_db = async (payload: {
   name: string;
   email: string;
@@ -52,16 +51,20 @@ const register_user_into_db = async (payload: {
       await tx.company.create({
         data: {
           accountId: createdAccount.id,
-          name: payload.name
-        }
+          name: payload.name,
+        },
       });
     }
 
     if (payload.role === 'USER') {
-      await tx.user.create({ data: { accountId: createdAccount.id, name: payload.name } });
+      await tx.user.create({
+        data: { accountId: createdAccount.id, name: payload.name },
+      });
     }
     if (payload.role === 'ADMIN') {
-      await tx.admin.create({ data: { accountId: createdAccount.id, name: payload.name } });
+      await tx.admin.create({
+        data: { accountId: createdAccount.id, name: payload.name },
+      });
     }
     const finalUser = await tx.account.findUnique({
       where: { email: payload.email },
@@ -73,13 +76,13 @@ const register_user_into_db = async (payload: {
     });
     EmailSender(
       createdAccount.email,
-      "Welcome to ReviewHub – Account Successfully Created",
+      'Welcome to ReviewHub – Account Successfully Created',
       `
         <p>Hi there,</p>
     
         <p>Thank you for signing up! Your account has been successfully created and you're now ready to explore all that ReviewHub has to offer.</p>
-      `
-    )
+      `,
+    );
 
     return finalUser;
   });
@@ -130,9 +133,13 @@ const login_user_from_db = async (payload: {
     configs.jwt.refresh_secret as Secret,
     configs.jwt.refresh_expires as string,
   );
-  EmailSender(isUserExists.email, "Successfully login !!!", `<p>You are successfully login your account. If this wasn't you, please 
+  EmailSender(
+    isUserExists.email,
+    'Successfully login !!!',
+    `<p>You are successfully login your account. If this wasn't you, please 
         <a href="${configs.jwt.reset_base_link}" style="color: #1a73e8;">reset your password</a> immediately.
-    </p>`)
+    </p>`,
+  );
   return {
     accessToken: accessToken,
     refreshToken: refreshToken,
@@ -141,7 +148,7 @@ const login_user_from_db = async (payload: {
 
 const get_my_profile_from_db = async (email: string) => {
   const user = await prisma.account.findUnique({
-    where: { email: email, isDeleted: false, status: "ACTIVE" },
+    where: { email: email, isDeleted: false, status: 'ACTIVE' },
     select: {
       id: true,
       status: true,
@@ -149,19 +156,48 @@ const get_my_profile_from_db = async (email: string) => {
       role: true,
       isPremium: true,
       isCompleteProfile: true,
-      user: true,
-      admin: true,
-      company: true,
-      createdAt: true
-    }
+      createdAt: true,
+      user: {
+        select: {
+          name: true,
+        },
+      },
+      admin: {
+        select: {
+          name: true,
+        },
+      },
+      company: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
 
   if (!user) {
     throw new AppError('User not found', httpStatus.NOT_FOUND);
   }
-  return user;
-};
 
+  // Add `name` field dynamically
+  let name = null;
+  
+  if (user.admin?.name) {
+    name = user.admin.name;
+  } else if (user.user?.name) {
+    name = user.user.name;
+  } else if (user.company?.name) {
+    name = user.company.name;
+  }
+
+  // Add the name to the returned object
+  const result = {
+    ...user,
+    name,
+  };
+
+  return result;
+};
 
 const refresh_token_from_db = async (token: string) => {
   let decodedData;
@@ -178,7 +214,7 @@ const refresh_token_from_db = async (token: string) => {
     where: {
       email: decodedData.email,
       isDeleted: false,
-      status: "ACTIVE"
+      status: 'ACTIVE',
     },
   });
 
@@ -234,15 +270,15 @@ const change_password_from_db = async (
   });
   await EmailSender(
     isExistAccount.email,
-    "Your Password Changed !!",
+    'Your Password Changed !!',
     `<div style="font-family: Arial, sans-serif;">
       <h4>Password Change Notification</h4>
       <p>Your password was changed on <strong>${today}</strong>.</p>
       <p>If this wasn't you, please 
         <a href="${configs.jwt.reset_base_link}" style="color: #1a73e8;">reset your password</a> immediately.
       </p>
-    </div>`
-  )
+    </div>`,
+  );
 
   return 'Password update is successful.';
 };
@@ -289,7 +325,10 @@ const reset_password_into_db = async (
       configs.jwt.reset_secret as Secret,
     );
   } catch (err) {
-    throw new AppError('Your reset link is expire. Submit new link request!!', httpStatus.UNAUTHORIZED);
+    throw new AppError(
+      'Your reset link is expire. Submit new link request!!',
+      httpStatus.UNAUTHORIZED,
+    );
   }
 
   const isAccountExists = await prisma.account.findUnique({
@@ -316,31 +355,35 @@ const reset_password_into_db = async (
       password: hashedPassword,
     },
   });
-  EmailSender(isAccountExists.email, "Password Reset Successful.", `<p>Your password is successfully reset now you can login with using your password</p>`)
+  EmailSender(
+    isAccountExists.email,
+    'Password Reset Successful.',
+    `<p>Your password is successfully reset now you can login with using your password</p>`,
+  );
   return 'Password reset successfully!';
 };
 
 const change_account_status_into_db = async (payload: TChangeStatus) => {
   const isAccountExist = await prisma.account.findUnique({
     where: {
-      email: payload?.email
-    }
-  })
+      email: payload?.email,
+    },
+  });
   if (!isAccountExist) {
-    throw new AppError("Account not found !!", httpStatus.NOT_FOUND)
+    throw new AppError('Account not found !!', httpStatus.NOT_FOUND);
   }
   // update new status
   const result = await prisma.account.update({
     where: {
-      email: isAccountExist?.email
+      email: isAccountExist?.email,
     },
     data: {
-      status: payload.status
-    }
-  })
+      status: payload.status,
+    },
+  });
 
-  return result
-}
+  return result;
+};
 
 export const AuthService = {
   register_user_into_db,
@@ -350,5 +393,5 @@ export const AuthService = {
   change_password_from_db,
   forget_password_from_db,
   reset_password_into_db,
-  change_account_status_into_db
+  change_account_status_into_db,
 };

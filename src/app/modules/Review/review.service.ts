@@ -1,4 +1,4 @@
-import { Prisma, Review } from '@prisma/client';
+import { Prisma, Review, ReviewStatus } from '@prisma/client';
 import { prisma } from '../../utils/Prisma';
 import { AppError } from '../../utils/AppError';
 import status from 'http-status';
@@ -171,7 +171,7 @@ const createReview = async (reviewData: Review, email: string) => {
     ...userData,
   };
   const result = await prisma.review.create({
-    data: { ...data },
+    data: { ...data, status: ReviewStatus.PENDING },
   });
   return result;
 };
@@ -290,6 +290,35 @@ const manage_votes_into_db = async (
   return;
 };
 
+const approveReview = async (
+  reviewId: string,
+  statuss: 'PENDING' | 'APPROVED' | 'REJECTED',
+) => {
+  console.log(reviewId, statuss);
+  const review = await prisma.review.findUnique({
+    where: { id: reviewId, isDeleted: false },
+  });
+
+  if (!review) {
+    throw new AppError('Review not found', 404);
+  }
+
+  const updateData: Prisma.ReviewUpdateInput = {
+    status: statuss,
+  };
+
+  const updatedReview = await prisma.review.update({
+    where: { id: reviewId },
+    data: updateData,
+    include: {
+      category: true,
+      product: true,
+    },
+  });
+
+  return updatedReview;
+};
+
 export const reviewService = {
   createReview,
   updateReview,
@@ -299,4 +328,5 @@ export const reviewService = {
   getReviewByUserId,
   getAllPremiumReview,
   manage_votes_into_db,
+  approveReview,
 };
