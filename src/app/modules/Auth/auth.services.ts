@@ -147,7 +147,7 @@ const get_my_profile_from_db = async (email: string) => {
       status: true,
       email: true,
       role: true,
-
+      isPremium: true,
       isCompleteProfile: true,
       user: true,
       admin: true,
