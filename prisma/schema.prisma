@@ -19,6 +19,18 @@ enum AccountStatus {
   SUSPENDED
 }
 
+enum PaymentStatus {
+  PAID
+  UNPAID
+  FAILED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Category {
   id            String    @id @default(uuid())
   categoryImage String
@@ -120,6 +132,7 @@ model Review {
   productId            String?
   product              Product?          @relation(fields: [productId], references: [id])
   isPremium            Boolean           @default(false)
+  status               ReviewStatus      @default(PENDING)
   reviewerName         String?
   reviewerEmail        String?
   reviewerProfilePhoto String?
@@ -183,12 +196,6 @@ model Payment {
 enum VoteType {
   UPVOTE
   DOWNVOTE
-}
-
-enum PaymentStatus {
-  PAID
-  UNPAID
-  FAILED
 }
 
 model Team {

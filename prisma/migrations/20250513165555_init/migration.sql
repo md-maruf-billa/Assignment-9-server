@@ -5,7 +5,13 @@ CREATE TYPE "Role" AS ENUM ('USER', 'COMPANY', 'ADMIN');
 CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'SUSPENDED');
 
 -- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('PAID', 'UNPAID');
+CREATE TYPE "PaymentStatus" AS ENUM ('PAID', 'UNPAID', 'FAILED');
+
+-- CreateEnum
+CREATE TYPE "ReviewStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
+-- CreateEnum
+CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
 
 -- CreateTable
 CREATE TABLE "Category" (
@@ -100,6 +106,7 @@ CREATE TABLE "reviews" (
     "categoryId" TEXT NOT NULL,
     "productId" TEXT,
     "isPremium" BOOLEAN NOT NULL DEFAULT false,
+    "status" "ReviewStatus" NOT NULL DEFAULT 'PENDING',
     "reviewerName" TEXT,
     "reviewerEmail" TEXT,
     "reviewerProfilePhoto" TEXT,
@@ -110,6 +117,19 @@ CREATE TABLE "reviews" (
     "downVotes" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "reviews_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "votes" (
+    "id" TEXT NOT NULL,
+    "reviewId" TEXT NOT NULL,
+    "accountEmail" TEXT NOT NULL,
+    "type" "VoteType" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "votes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -183,7 +203,7 @@ CREATE UNIQUE INDEX "companies_accountId_key" ON "companies"("accountId");
 CREATE UNIQUE INDEX "admins_accountId_key" ON "admins"("accountId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "payments_accountId_key" ON "payments"("accountId");
+CREATE UNIQUE INDEX "votes_reviewId_accountEmail_key" ON "votes"("reviewId", "accountEmail");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "payments_transactionId_key" ON "payments"("transactionId");
@@ -211,6 +231,12 @@ ALTER TABLE "reviews" ADD CONSTRAINT "reviews_categoryId_fkey" FOREIGN KEY ("cat
 
 -- AddForeignKey
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "votes" ADD CONSTRAINT "votes_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "reviews"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "votes" ADD CONSTRAINT "votes_accountEmail_fkey" FOREIGN KEY ("accountEmail") REFERENCES "accounts"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "review_comments" ADD CONSTRAINT "review_comments_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

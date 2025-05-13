@@ -45,11 +45,7 @@ const getReviewByUserId = catchAsyncResponse(async (req, res) => {
 
 const createReview = catchAsyncResponse(async (req, res) => {
   const { email } = req?.user;
-  const result = await reviewService.createReview(
-    req.body,
-    email
-
-  );
+  const result = await reviewService.createReview(req.body, email);
   manageResponse(res, {
     statusCode: status.CREATED,
     success: true,
@@ -76,7 +72,7 @@ const updateReview = catchAsyncResponse(async (req, res) => {
 
 const deleteReview = catchAsyncResponse(async (req, res) => {
   const { reviewId } = req?.query;
-  const { email } = req?.user
+  const { email } = req?.user;
   await reviewService.deleteReview(reviewId as string, email as string);
   manageResponse(res, {
     statusCode: status.OK,
@@ -98,16 +94,30 @@ const getAllPremiumReview = catchAsyncResponse(async (req, res) => {
 
 const manage_votes = catchAsyncResponse(async (req, res) => {
   const { reviewId, type } = req?.query;
-  const { email } = req?.user
-  const result = await reviewService.manage_votes_into_db(reviewId as string, type as string, email as string)
+  const { email } = req?.user;
+  const result = await reviewService.manage_votes_into_db(
+    reviewId as string,
+    type as string,
+    email as string,
+  );
   manageResponse(res, {
     statusCode: status.OK,
     success: true,
     message: 'Voting don.',
     data: result,
   });
-})
+});
 
+const approveReview = catchAsyncResponse(async (req, res) => {
+  const { reviewId, status } = req.body;
+  const result = await reviewService.approveReview(reviewId, status);
+  manageResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: `Review ${status.toLowerCase()} successfully`,
+    data: result,
+  });
+});
 
 export const reviewController = {
   createReview,
@@ -117,5 +127,6 @@ export const reviewController = {
   getSingleReview,
   getReviewByUserId,
   getAllPremiumReview,
-  manage_votes
+  manage_votes,
+  approveReview,
 };

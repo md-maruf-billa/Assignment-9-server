@@ -7,7 +7,7 @@ const createReview = z.object({
   categoryId: z.string().uuid('Invalid category ID'),
   productId: z.string().uuid('Invalid product ID').optional(),
   isPremium: z.boolean().optional(),
-  status: z.enum(['PENDING', 'PUBLISHED', 'UNPUBLISHED']).optional(),
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
   moderationNote: z.string().optional(),
 });
 
